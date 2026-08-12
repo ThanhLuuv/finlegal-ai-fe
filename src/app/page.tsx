@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSSE } from '../hooks/useSSE';
+import { Header } from '../components/Header';
+import { SecurityGate } from '../components/SecurityGate';
 import { ChatWindow } from '../components/ChatWindow';
 import { FileUpload } from '../components/FileUpload';
 import { PDFViewer } from '../components/PDFViewer';
-import { ShieldCheck, Database, CheckCircle, HelpCircle, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 
 export default function HomePage() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://finlegal-backend.lvthanh-work.workers.dev';
@@ -14,18 +16,15 @@ export default function HomePage() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [seedNotice, setSeedNotice] = useState<string | null>(null);
   
-  // Full-Screen Turnstile Strict Security Verification State
+  // Full-Screen Turnstile Security Verification State
   const [isVerified, setIsVerified] = useState(false);
   const [isTurnstilePassed, setIsTurnstilePassed] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   useEffect(() => {
     // Bind global Turnstile Callbacks for automatic verification
     if (typeof window !== 'undefined') {
-      (window as any).onTurnstileSuccess = (token: string) => {
-        setTurnstileToken(token);
+      (window as any).onTurnstileSuccess = (_token: string) => {
         setIsTurnstilePassed(true);
-        // Automatically unlock and enter main workspace after 600ms
         setTimeout(() => {
           setIsVerified(true);
         }, 600);
@@ -33,12 +32,10 @@ export default function HomePage() {
 
       (window as any).onTurnstileExpired = () => {
         setIsTurnstilePassed(false);
-        setTurnstileToken(null);
       };
 
       (window as any).onTurnstileError = () => {
         setIsTurnstilePassed(false);
-        setTurnstileToken(null);
       };
     }
   }, []);
@@ -61,113 +58,23 @@ export default function HomePage() {
     }
   };
 
-  // -------------------------------------------------------------
-  // STRICT ENTERPRISE CLOUDFLARE TURNSTILE CHECKPOINT GATE
-  // -------------------------------------------------------------
+  // Render Full-Screen Light Theme Security Gate if not verified
   if (!isVerified) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#0B1727] text-white p-6 relative overflow-hidden font-sans">
-        <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl flex flex-col items-center text-center space-y-6 relative z-10">
-          {/* Logo Header */}
-          <div className="relative">
-            <img 
-              src="/logo.png" 
-              alt="FinLegal AI Logo" 
-              className="w-20 h-20 rounded-2xl object-cover border border-slate-700 shadow-md"
-            />
-            <div className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-blue-600 text-white shadow-xs">
-              <Lock className="w-4 h-4 text-white" />
-            </div>
-          </div>
-
-          <div>
-            <h1 className="text-xl font-extrabold text-white tracking-tight">FinLegal AI Security Checkpoint</h1>
-            <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
-              Vui lòng hoàn thành xác thực **Cloudflare Turnstile** bên dưới để mở khóa quyền truy cập hệ thống.
-            </p>
-          </div>
-
-          {/* Cloudflare Turnstile Widget with Automatic Success Callback */}
-          <div className="w-full bg-slate-950 p-4 rounded-2xl border border-slate-800 flex justify-center shadow-inner min-h-[75px] items-center">
-            <div 
-              className="cf-turnstile" 
-              data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAAENuyoUuTRh2b7uR'} 
-              data-callback="onTurnstileSuccess"
-              data-expired-callback="onTurnstileExpired"
-              data-error-callback="onTurnstileError"
-              data-theme="dark"
-            ></div>
-          </div>
-
-          {/* Status Badge & Auto-Pass Button */}
-          <div className="w-full space-y-3">
-            {isTurnstilePassed ? (
-              <div className="w-full py-3.5 px-6 rounded-xl bg-emerald-600 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-2 animate-pulse">
-                <CheckCircle className="w-4 h-4 text-white" />
-                <span>Xác thực thành công! Đang chuyển vào hệ thống...</span>
-              </div>
-            ) : (
-              <button
-                disabled={!isTurnstilePassed}
-                className="w-full py-3.5 px-6 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 opacity-60 cursor-not-allowed text-xs font-extrabold flex items-center justify-center gap-2"
-              >
-                <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
-                <span>Vui lòng tích chọn xác thực ở ô trên</span>
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 text-[11px] text-slate-400 border-t border-slate-800/80 pt-4 w-full justify-center">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Bảo vệ an ninh bởi Cloudflare</span>
-          </div>
-        </div>
-      </div>
+      <SecurityGate 
+        isTurnstilePassed={isTurnstilePassed} 
+        onTurnstileSuccess={() => setIsVerified(true)} 
+      />
     );
   }
 
-  // -------------------------------------------------------------
-  // MAIN WORKSPACE APPLICATION (RENDERED AFTER VERIFICATION)
-  // -------------------------------------------------------------
+  // Render Main Workspace Application
   return (
     <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-100 text-slate-900 font-sans">
-      {/* Deep Navy Blue Primary Brand Header Navigation */}
-      <header className="h-16 border-b border-slate-800 bg-[#0B1727] px-6 flex items-center justify-between shrink-0 shadow-sm">
-        <div className="flex items-center gap-3.5">
-          <img 
-            src="/logo.png" 
-            alt="FinLegal AI Logo" 
-            className="w-10 h-10 rounded-xl object-cover border border-slate-700 shadow-sm"
-          />
-          <div>
-            <h1 className="text-base font-bold text-white flex items-center gap-2.5 tracking-tight">
-              FinLegal AI
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-white border border-slate-700">
-                Trợ lý Thông minh
-              </span>
-            </h1>
-            <p className="text-xs text-slate-300">Phân tích Hợp đồng & Đối soát Số liệu Bán hàng Doanh nghiệp</p>
-          </div>
-        </div>
-
-        {/* Top Controls */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleSeedDatabase}
-            disabled={isSeeding}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-white transition-all shadow-sm active:scale-95 cursor-pointer"
-            title="Tạo sẵn các bản ghi bán hàng mẫu để đối soát"
-          >
-            <Database className="w-4 h-4 text-white" />
-            <span>{isSeeding ? 'Đang nạp...' : 'Tạo Dữ liệu Mẫu'}</span>
-          </button>
-
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs font-medium">
-            <CheckCircle className="w-4 h-4 text-emerald-400" />
-            <span>Hệ thống: Đã Xác Thực Cloudflare</span>
-          </div>
-        </div>
-      </header>
+      <Header 
+        isSeeding={isSeeding} 
+        onSeedDatabase={handleSeedDatabase} 
+      />
 
       {/* Main Workspace Layout */}
       <div className="flex-1 flex overflow-hidden p-4 gap-4 bg-slate-100">

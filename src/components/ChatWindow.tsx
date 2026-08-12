@@ -43,17 +43,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   ];
 
   return (
-    <div className="flex flex-col h-full rounded-2xl bg-white border border-slate-200/80 shadow-xs overflow-hidden">
+    <div className="flex flex-col h-full rounded-2xl bg-white shadow-sm overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-slate-100 bg-white flex items-center justify-between">
         <div className="flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-[#0B1727] text-white flex items-center justify-center shadow-xs">
-            <Bot className="w-5 h-5 text-blue-400" />
+            <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               Trợ Lý FinLegal AI
-              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-900 border border-blue-200">
+              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#0B1727] text-white">
                 Phân tích & Đối soát 24/7
               </span>
             </h2>
@@ -63,11 +63,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       {/* Message Feed (Clean White Background) */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/60">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-8 max-w-xl mx-auto space-y-6">
-            <div className="w-14 h-14 rounded-2xl bg-[#0B1727] border border-blue-900 text-blue-400 flex items-center justify-center shadow-sm">
-              <Bot className="w-7 h-7" />
+            <div className="w-14 h-14 rounded-2xl bg-[#0B1727] text-white flex items-center justify-center shadow-md">
+              <Bot className="w-7 h-7 text-white" />
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900 mb-1.5">Hệ Thống Phân Tích & Đối Soát Tài Chính</h3>
@@ -85,7 +85,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 <button
                   key={i}
                   onClick={() => onSendMessage(promptText)}
-                  className="w-full text-left p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-[#0B1727] text-xs text-slate-800 transition-all duration-200 flex items-center justify-between shadow-xs hover:shadow-sm group cursor-pointer"
+                  className="w-full text-left p-3.5 rounded-xl bg-white hover:bg-slate-50 text-xs text-slate-800 transition-all duration-200 flex items-center justify-between shadow-xs hover:shadow-md group cursor-pointer"
                 >
                   <span className="font-medium group-hover:text-[#0B1727] leading-snug">{promptText}</span>
                   <span className="text-slate-400 group-hover:text-[#0B1727] font-bold text-sm ml-3 shrink-0">→</span>
@@ -101,7 +101,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             >
               {msg.sender === 'assistant' && (
                 <div className="w-8 h-8 rounded-xl bg-[#0B1727] text-white flex items-center justify-center shrink-0 shadow-xs mt-1">
-                  <Bot className="w-4 h-4 text-blue-400" />
+                  <Bot className="w-4 h-4 text-white" />
                 </div>
               )}
 
@@ -109,8 +109,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 <div
                   className={`p-4 rounded-2xl text-xs leading-relaxed shadow-xs ${
                     msg.sender === 'user'
-                      ? 'bg-[#0B1727] text-white rounded-tr-xs font-medium'
-                      : 'bg-white border border-slate-200 text-slate-800 rounded-tl-xs'
+                      ? 'bg-[#0B1727] text-white rounded-tr-xs font-medium shadow-sm'
+                      : 'bg-white text-slate-800 rounded-tl-xs shadow-sm'
                   }`}
                 >
                   {/* Thought Process Accordion */}
@@ -143,8 +143,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               </div>
 
               {msg.sender === 'user' && (
-                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs mt-1">
-                  <User className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-xl bg-[#0B1727] text-white flex items-center justify-center shrink-0 shadow-xs mt-1">
+                  <User className="w-4 h-4 text-white" />
                 </div>
               )}
             </div>
@@ -155,7 +155,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
       {/* Input Form & Anti-Bot Protection Badge */}
       <form onSubmit={handleSubmit} className="p-4 border-t border-slate-100 bg-white space-y-2">
-        <div className="flex items-center gap-3 bg-slate-50/80 border border-slate-200 focus-within:border-[#0B1727] focus-within:bg-white rounded-xl p-2.5 transition-all shadow-xs">
+        <div className="flex items-center gap-3 bg-slate-50 hover:bg-slate-100/70 focus-within:bg-white focus-within:shadow-md rounded-xl p-2.5 transition-all shadow-inner">
           <input
             type="text"
             value={inputPrompt}
@@ -167,10 +167,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           <button
             type="submit"
             disabled={!inputPrompt.trim() || isStreaming}
-            className="px-4 py-2 rounded-lg bg-[#0B1727] hover:bg-slate-900 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
+            className="px-4 py-2 rounded-lg bg-[#0B1727] hover:bg-slate-900 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <span>Gửi</span>
-            {isStreaming ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5 text-blue-400" />}
+            {isStreaming ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5 text-white" />}
           </button>
         </div>
 

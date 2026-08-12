@@ -45,7 +45,7 @@ export default function HomePage() {
           <div>
             <h1 className="text-base font-bold text-white flex items-center gap-2.5 tracking-tight">
               FinLegal AI
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800">
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-white border border-slate-700">
                 Trợ lý Thông minh
               </span>
             </h1>
@@ -61,7 +61,7 @@ export default function HomePage() {
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-white transition-all shadow-sm active:scale-95 cursor-pointer"
             title="Tạo sẵn các bản ghi bán hàng mẫu để đối soát"
           >
-            <Database className="w-4 h-4 text-blue-400" />
+            <Database className="w-4 h-4 text-white" />
             <span>{isSeeding ? 'Đang nạp...' : 'Tạo Dữ liệu Mẫu'}</span>
           </button>
 
@@ -94,7 +94,7 @@ export default function HomePage() {
           />
 
           {/* User Friendly Guide Box */}
-          <div className="mt-auto p-4 rounded-xl bg-white border border-slate-200 shadow-sm space-y-2 text-xs text-slate-700">
+          <div className="mt-auto p-4 rounded-xl bg-white shadow-sm space-y-2 text-xs text-slate-700">
             <div className="flex items-center gap-2 text-slate-900 font-bold">
               <HelpCircle className="w-4 h-4 text-[#0B1727]" />
               <span>Hướng Dẫn Sử Dụng</span>

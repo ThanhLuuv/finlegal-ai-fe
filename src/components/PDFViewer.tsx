@@ -38,7 +38,7 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
   }, [backendUrl]);
 
   return (
-    <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+    <div className="p-4 rounded-xl bg-white shadow-sm">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
           <FileText className="w-4 h-4 text-[#0B1727]" />
@@ -46,7 +46,7 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
         </div>
         <button
           onClick={fetchDocuments}
-          className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors border border-slate-200 cursor-pointer"
+          className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer shadow-2xs"
           title="Tải lại danh sách"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
@@ -56,14 +56,14 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
       <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
         <button
           onClick={() => onSelectDoc(undefined)}
-          className={`w-full text-left p-2.5 rounded-lg text-xs transition-all flex items-center justify-between border cursor-pointer ${
+          className={`w-full text-left p-2.5 rounded-lg text-xs transition-all flex items-center justify-between cursor-pointer ${
             !selectedDocId
-              ? 'bg-[#0B1727] border-[#0B1727] text-white font-semibold shadow-xs'
-              : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+              ? 'bg-[#0B1727] text-white font-semibold shadow-sm'
+              : 'bg-slate-50 text-slate-700 hover:bg-slate-100 shadow-2xs'
           }`}
         >
           <span>Tất cả văn bản đã tải lên</span>
-          {!selectedDocId && <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />}
+          {!selectedDocId && <CheckCircle2 className="w-4 h-4 text-white shrink-0" />}
         </button>
 
         {documents.map(doc => {
@@ -72,10 +72,10 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
             <button
               key={doc.doc_id}
               onClick={() => onSelectDoc(doc.doc_id)}
-              className={`w-full text-left p-2.5 rounded-lg text-xs transition-all flex items-center justify-between border cursor-pointer ${
+              className={`w-full text-left p-2.5 rounded-lg text-xs transition-all flex items-center justify-between cursor-pointer ${
                 isSelected
-                  ? 'bg-[#0B1727] border-[#0B1727] text-white font-semibold shadow-xs'
-                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  ? 'bg-[#0B1727] text-white font-semibold shadow-sm'
+                  : 'bg-slate-50 text-slate-700 hover:bg-slate-100 shadow-2xs'
               }`}
             >
               <div className="truncate pr-2">
@@ -84,7 +84,7 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
                   Đã lưu • {new Date(doc.created_at).toLocaleDateString()}
                 </p>
               </div>
-              {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />}
+              {isSelected && <CheckCircle2 className="w-4 h-4 text-white shrink-0" />}
             </button>
           );
         })}

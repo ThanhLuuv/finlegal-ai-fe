@@ -49,8 +49,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({ backendUrl = 'http://loc
   };
 
   return (
-    <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-      <div className="flex flex-col items-center justify-center p-5 border-2 border-dashed border-slate-300 hover:border-[#0B1727] rounded-xl transition-all bg-slate-50/70 hover:bg-slate-50 text-center cursor-pointer relative group">
+    <div className="p-4 rounded-xl bg-white shadow-sm space-y-3">
+      <div className="flex flex-col items-center justify-center p-5 rounded-xl transition-all bg-slate-50 hover:bg-slate-100 text-center cursor-pointer relative group shadow-inner">
         <input
           type="file"
           accept=".pdf"
@@ -65,8 +65,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({ backendUrl = 'http://loc
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2.5">
-            <div className="p-3 rounded-xl bg-[#0B1727] text-white shadow-xs group-hover:scale-105 transition-transform">
-              <UploadCloud className="w-5 h-5 text-blue-400" />
+            <div className="p-3 rounded-xl bg-[#0B1727] text-white shadow-md group-hover:scale-105 transition-transform">
+              <UploadCloud className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-900 group-hover:text-blue-900 transition-colors">Tải lên PDF Hợp đồng / Báo cáo</p>
@@ -77,7 +77,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ backendUrl = 'http://loc
       </div>
 
       {statusMessage && (
-        <div className="mt-3 flex items-center gap-2 text-xs text-slate-800 bg-blue-50/80 p-2.5 rounded-xl border border-blue-200">
+        <div className="flex items-center gap-2 text-xs text-slate-800 bg-blue-50/80 p-2.5 rounded-xl shadow-xs">
           <FileText className="w-4 h-4 text-blue-700 shrink-0" />
           <span className="font-mono text-[11px] truncate">{statusMessage}</span>
         </div>

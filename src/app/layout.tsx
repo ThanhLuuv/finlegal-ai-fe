@@ -5,6 +5,11 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'FinLegal AI - Hệ thống Trợ lý AI Tài chính & Pháp lý Doanh nghiệp',
   description: 'Tra cứu hợp đồng, số liệu doanh thu và kiểm toán rủi ro tự động',
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/favicon.ico',
+    apple: '/icon.png',
+  },
 };
 
 export default function RootLayout({

@@ -8,7 +8,7 @@ interface FileUploadProps {
   onUploadSuccess: (docId: string, fileName: string) => void;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({ backendUrl = 'http://localhost:8787', onUploadSuccess }) => {
+export const FileUpload: React.FC<FileUploadProps> = ({ backendUrl = 'https://finlegal-backend.lvthanh-work.workers.dev', onUploadSuccess }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
@@ -22,7 +22,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ backendUrl = 'http://loc
     }
 
     setIsUploading(true);
-    setStatusMessage('Đang tải lên & phân tích tài liệu...');
+    setStatusMessage('Đang tải lên & phân tích cấu trúc tài liệu...');
 
     try {
       const formData = new FormData();
@@ -37,8 +37,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({ backendUrl = 'http://loc
         throw new Error(`Tải lên thất bại: ${res.statusText}`);
       }
 
-      const data = await res.json() as { docId: string; fileName: string };
-      setStatusMessage(`Tải lên thành công! File: ${data.fileName || file.name}`);
+      const data = await res.json() as { docId: string; fileName: string; warnings?: string[] };
+      const warningText = data.warnings && data.warnings.length > 0 ? ` (${data.warnings.length} lưu ý cấu trúc)` : '';
+      setStatusMessage(`Tải lên thành công! File: ${data.fileName || file.name}${warningText}`);
       onUploadSuccess(data.docId, data.fileName || file.name);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);

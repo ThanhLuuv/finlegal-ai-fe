@@ -43,35 +43,35 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   ];
 
   return (
-    <div className="flex flex-col h-full rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+    <div className="flex flex-col h-full rounded-2xl bg-slate-950 border border-slate-800 shadow-md overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-slate-100 bg-white flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-sm">
-            <Bot className="w-5 h-5 text-indigo-400" />
+      <div className="px-6 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center shadow-sm">
+            <Bot className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2">
               Trợ Lý FinLegal AI
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800/80">
                 Phân tích & Đối soát 24/7
               </span>
             </h2>
-            <p className="text-xs text-slate-500">Tra cứu Văn bản & Đối soát Số liệu Bán hàng Doanh nghiệp</p>
+            <p className="text-xs text-slate-400">Tra cứu Văn bản & Đối soát Số liệu Bán hàng Doanh nghiệp</p>
           </div>
         </div>
       </div>
 
       {/* Message Feed */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-900/90">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-8 max-w-xl mx-auto space-y-6">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-blue-950/80 border border-blue-800/80 text-blue-400 flex items-center justify-center shadow-sm">
               <Sparkles className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900 mb-1.5">Hệ Thống Phân Tích & Đối Soát Tài Chính</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
+              <h3 className="text-base font-bold text-white mb-1.5">Hệ Thống Phân Tích & Đối Soát Tài Chính</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
                 Nhập câu hỏi để đối soát số liệu Hợp đồng PDF với Cơ sở dữ liệu bán hàng thực tế theo thời gian thực.
               </p>
             </div>
@@ -85,10 +85,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 <button
                   key={i}
                   onClick={() => onSendMessage(promptText)}
-                  className="w-full text-left p-3.5 rounded-xl bg-white hover:bg-slate-100/80 border border-slate-200 hover:border-indigo-300 text-xs text-slate-700 transition-all duration-200 flex items-center justify-between shadow-xs hover:shadow-sm group"
+                  className="w-full text-left p-3.5 rounded-xl bg-slate-950 hover:bg-slate-850 border border-slate-800 hover:border-blue-500 text-xs text-slate-200 transition-all duration-200 flex items-center justify-between shadow-sm group"
                 >
-                  <span className="font-medium group-hover:text-slate-900 leading-snug">{promptText}</span>
-                  <Sparkles className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 shrink-0 ml-3 transition-colors" />
+                  <span className="font-medium group-hover:text-white leading-snug">{promptText}</span>
+                  <Sparkles className="w-4 h-4 text-slate-400 group-hover:text-blue-400 shrink-0 ml-3 transition-colors" />
                 </button>
               ))}
             </div>
@@ -100,17 +100,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.sender === 'assistant' && (
-                <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-xs mt-1">
-                  <Bot className="w-4 h-4 text-indigo-400" />
+                <div className="w-8 h-8 rounded-xl bg-slate-950 border border-slate-800 text-blue-400 flex items-center justify-center shrink-0 shadow-xs mt-1">
+                  <Bot className="w-4 h-4" />
                 </div>
               )}
 
               <div className={`max-w-3xl ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
                 <div
-                  className={`p-4 rounded-2xl text-xs leading-relaxed shadow-xs ${
+                  className={`p-4 rounded-2xl text-xs leading-relaxed shadow-sm ${
                     msg.sender === 'user'
-                      ? 'bg-slate-900 text-white rounded-tr-xs'
-                      : 'bg-white border border-slate-200 text-slate-800 rounded-tl-xs'
+                      ? 'bg-blue-600 text-white rounded-tr-xs font-medium'
+                      : 'bg-slate-950 border border-slate-800 text-slate-100 rounded-tl-xs'
                   }`}
                 >
                   {/* Thought Process Accordion */}
@@ -125,13 +125,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
                   {/* Response Text */}
                   {msg.content ? (
-                    <div className="prose prose-slate prose-xs max-w-none">
+                    <div className="prose prose-invert prose-xs max-w-none">
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
                   ) : (
                     msg.isStreaming && (
-                      <div className="flex items-center gap-2.5 text-slate-600 py-1 font-mono text-xs">
-                        <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                      <div className="flex items-center gap-2.5 text-blue-300 py-1 font-mono text-xs">
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
                         <span>Đang phân tích và đối soát số liệu...</span>
                       </div>
                     )
@@ -143,7 +143,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               </div>
 
               {msg.sender === 'user' && (
-                <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs mt-1">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs mt-1">
                   <User className="w-4 h-4" />
                 </div>
               )}
@@ -154,20 +154,20 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       {/* Input Form & Anti-Bot Protection Badge */}
-      <form onSubmit={handleSubmit} className="p-4 border-t border-slate-100 bg-white space-y-2">
-        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 focus-within:border-slate-800 focus-within:bg-white rounded-xl p-2.5 transition-all shadow-xs">
+      <form onSubmit={handleSubmit} className="p-4 border-t border-slate-800 bg-slate-950 space-y-2">
+        <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 focus-within:border-blue-500 rounded-xl p-2.5 transition-all shadow-xs">
           <input
             type="text"
             value={inputPrompt}
             onChange={(e) => setInputPrompt(e.target.value)}
             placeholder="Nhập câu hỏi hoặc yêu cầu đối soát số liệu..."
             disabled={isStreaming}
-            className="flex-1 bg-transparent px-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
+            className="flex-1 bg-transparent px-2 text-xs text-white placeholder-slate-400 focus:outline-none"
           />
           <button
             type="submit"
             disabled={!inputPrompt.trim() || isStreaming}
-            className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition-all shadow-xs flex items-center gap-1.5"
+            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
           >
             <span>Gửi</span>
             {isStreaming ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -183,8 +183,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         
         <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="font-medium text-slate-500">Bảo vệ an ninh bởi Cloudflare Turnstile Defense</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="font-medium text-slate-400">Bảo vệ an ninh bởi Cloudflare Turnstile Defense</span>
           </div>
         </div>
       </form>

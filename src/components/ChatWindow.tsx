@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import { ChatMessage } from '../types';
 import { ThoughtProcess } from './ThoughtProcess';
 import { AuditCard } from './AuditCard';
-import { Send, Bot, User, Sparkles, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Loader2 } from 'lucide-react';
 
 interface ChatWindowProps {
   messages: ChatMessage[];
@@ -67,7 +67,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-8 max-w-xl mx-auto space-y-6">
             <div className="w-14 h-14 rounded-2xl bg-[#0B1727] border border-blue-900 text-blue-400 flex items-center justify-center shadow-sm">
-              <Sparkles className="w-7 h-7" />
+              <Bot className="w-7 h-7" />
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900 mb-1.5">Hệ Thống Phân Tích & Đối Soát Tài Chính</h3>
@@ -85,10 +85,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 <button
                   key={i}
                   onClick={() => onSendMessage(promptText)}
-                  className="w-full text-left p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-[#0B1727] text-xs text-slate-800 transition-all duration-200 flex items-center justify-between shadow-xs hover:shadow-sm group"
+                  className="w-full text-left p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-[#0B1727] text-xs text-slate-800 transition-all duration-200 flex items-center justify-between shadow-xs hover:shadow-sm group cursor-pointer"
                 >
                   <span className="font-medium group-hover:text-[#0B1727] leading-snug">{promptText}</span>
-                  <Sparkles className="w-4 h-4 text-slate-400 group-hover:text-blue-600 shrink-0 ml-3 transition-colors" />
+                  <span className="text-slate-400 group-hover:text-[#0B1727] font-bold text-sm ml-3 shrink-0">→</span>
                 </button>
               ))}
             </div>

@@ -36,12 +36,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     setInputPrompt('');
   };
 
-  const samplePrompts = [
-    'Phân tích các điều khoản ghi nhận doanh thu và thời hạn trong văn bản hợp đồng đã tải lên',
-    'Truy vấn tổng doanh thu ghi nhận thực tế theo từng quý trong cơ sở dữ liệu hệ thống bán hàng',
-    'Đối soát chi tiết giá trị hợp đồng PDF với các giao dịch thực tế đã phát sinh trong hệ thống'
-  ];
-
   return (
     <div className="flex flex-col h-full rounded-2xl bg-white shadow-sm overflow-hidden">
       {/* Header */}
@@ -74,23 +68,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               <p className="text-xs text-slate-500 leading-relaxed">
                 Nhập câu hỏi để đối soát số liệu Hợp đồng PDF với Cơ sở dữ liệu bán hàng thực tế theo thời gian thực.
               </p>
-            </div>
-
-            {/* Quick Sample Prompts */}
-            <div className="w-full space-y-2.5 pt-2">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-left pl-1">
-                Gợi ý Yêu cầu Khởi tạo:
-              </p>
-              {samplePrompts.map((promptText, i) => (
-                <button
-                  key={i}
-                  onClick={() => onSendMessage(promptText)}
-                  className="w-full text-left p-3.5 rounded-xl bg-white hover:bg-slate-50 text-xs text-slate-800 transition-all duration-200 flex items-center justify-between shadow-xs hover:shadow-md group cursor-pointer"
-                >
-                  <span className="font-medium group-hover:text-[#0B1727] leading-snug">{promptText}</span>
-                  <span className="text-slate-400 group-hover:text-[#0B1727] font-bold text-sm ml-3 shrink-0">→</span>
-                </button>
-              ))}
             </div>
           </div>
         ) : (

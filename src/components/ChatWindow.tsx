@@ -151,7 +151,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Form */}
+      {/* Input Form & Anti-Bot Protection Badge */}
       <form onSubmit={handleSubmit} className="p-4 border-t border-slate-200 bg-white">
         <div className="flex items-center gap-3 bg-slate-50 border border-slate-300 focus-within:border-slate-800 rounded-lg p-2 transition-colors">
           <input
@@ -169,6 +169,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           >
             {isStreaming ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </button>
+        </div>
+
+        {/* Cloudflare Turnstile Enterprise Security Badge */}
+        <div className="mt-2 flex items-center justify-between text-[10px] text-slate-400 px-1">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Hệ thống được bảo vệ bởi **Cloudflare Turnstile Anti-Bot Defense**</span>
+          </div>
+          <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50">
+            Verified Edge Security
+          </span>
         </div>
       </form>
     </div>

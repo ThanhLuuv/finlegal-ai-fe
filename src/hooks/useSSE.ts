@@ -9,7 +9,7 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
   const [activeThoughts, setActiveThoughts] = useState<AgentThoughtStep[]>([]);
   const [latestAuditReport, setLatestAuditReport] = useState<AuditReport | null>(null);
 
-  const sendMessage = useCallback(async (prompt: string, docId?: string) => {
+  const sendMessage = useCallback(async (prompt: string, docId?: string, turnstileToken?: string) => {
     if (!prompt.trim() || isStreaming) return;
 
     const userMessage: ChatMessage = {
@@ -35,9 +35,17 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
     setLatestAuditReport(null);
 
     try {
+      const headers: Record<string, string> = { 
+        'Content-Type': 'application/json' 
+      };
+
+      if (turnstileToken) {
+        headers['X-Turnstile-Token'] = turnstileToken;
+      }
+
       const response = await fetch(`${backendUrl}/api/chat/stream`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ prompt, docId }),
       });
 

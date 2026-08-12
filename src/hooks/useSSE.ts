@@ -112,6 +112,18 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
                   }
                   return msg;
                 }));
+              } else if (currentEvent === 'error') {
+                const { message: errMessage } = parsedData;
+                setMessages(prev => prev.map(msg => {
+                  if (msg.id === assistantMessageId) {
+                    return {
+                      ...msg,
+                      content: `❌ **Thông báo lỗi từ hệ thống:**\n${errMessage || 'Đã xảy ra lỗi trong quá trình xử lý đối soát.'}`,
+                      isStreaming: false
+                    };
+                  }
+                  return msg;
+                }));
               }
             } catch (err) {
               console.warn('Failed to parse SSE payload:', dataStr);
@@ -125,7 +137,7 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
         if (msg.id === assistantMessageId) {
           return {
             ...msg,
-            content: `Error: Unable to connect to FinLegal Engine (${errorMsg}).`,
+            content: `❌ **Lỗi kết nối:** Không thể kết nối với máy chủ FinLegal Engine (${errorMsg}).`,
             isStreaming: false
           };
         }
@@ -133,6 +145,17 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
       }));
     } finally {
       setIsStreaming(false);
+      // Guarantee the message stops loading even if stream closed prematurely
+      setMessages(prev => prev.map(msg => {
+        if (msg.id === assistantMessageId && msg.isStreaming) {
+          return {
+            ...msg,
+            content: msg.content || '❌ Rất tiếc, tiến trình xử lý bị ngắt kết nối trước khi hoàn tất.',
+            isStreaming: false
+          };
+        }
+        return msg;
+      }));
     }
   }, [backendUrl, isStreaming]);
 

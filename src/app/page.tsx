@@ -5,7 +5,7 @@ import { useSSE } from '../hooks/useSSE';
 import { ChatWindow } from '../components/ChatWindow';
 import { FileUpload } from '../components/FileUpload';
 import { PDFViewer } from '../components/PDFViewer';
-import { ShieldCheck, Database, CheckCircle, HelpCircle, Lock, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Database, CheckCircle, HelpCircle, Lock, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function HomePage() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://finlegal-backend.lvthanh-work.workers.dev';
@@ -14,17 +14,33 @@ export default function HomePage() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [seedNotice, setSeedNotice] = useState<string | null>(null);
   
-  // Full-Screen Security Verification Checkpoint State
+  // Full-Screen Turnstile Strict Security Verification State
   const [isVerified, setIsVerified] = useState(false);
+  const [isTurnstilePassed, setIsTurnstilePassed] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Listen for Turnstile verification or allow instant check
-    const checkVerification = () => {
-      if (typeof window !== 'undefined' && (window as any).turnstile) {
-        // Auto pass on load if Turnstile script is active
-      }
-    };
-    checkVerification();
+    // Bind global Turnstile Callbacks for automatic verification
+    if (typeof window !== 'undefined') {
+      (window as any).onTurnstileSuccess = (token: string) => {
+        setTurnstileToken(token);
+        setIsTurnstilePassed(true);
+        // Automatically unlock and enter main workspace after 600ms
+        setTimeout(() => {
+          setIsVerified(true);
+        }, 600);
+      };
+
+      (window as any).onTurnstileExpired = () => {
+        setIsTurnstilePassed(false);
+        setTurnstileToken(null);
+      };
+
+      (window as any).onTurnstileError = () => {
+        setIsTurnstilePassed(false);
+        setTurnstileToken(null);
+      };
+    }
   }, []);
 
   const handleSeedDatabase = async () => {
@@ -46,16 +62,13 @@ export default function HomePage() {
   };
 
   // -------------------------------------------------------------
-  // DEDICATED FULL-SCREEN CLOUDFLARE SECURITY CHECKPOINT PAGE
+  // STRICT ENTERPRISE CLOUDFLARE TURNSTILE CHECKPOINT GATE
   // -------------------------------------------------------------
   if (!isVerified) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-[#0B1727] text-white p-6 relative overflow-hidden font-sans">
-        {/* Background Subtle Gradient Overlay */}
-        <div className="absolute inset-0 bg-radial from-blue-900/20 via-transparent to-transparent pointer-events-none" />
-
         <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl flex flex-col items-center text-center space-y-6 relative z-10">
-          {/* Logo & Security Icon Header */}
+          {/* Logo Header */}
           <div className="relative">
             <img 
               src="/logo.png" 
@@ -68,33 +81,45 @@ export default function HomePage() {
           </div>
 
           <div>
-            <h1 className="text-xl font-extrabold text-white tracking-tight">FinLegal AI Defense Gate</h1>
+            <h1 className="text-xl font-extrabold text-white tracking-tight">FinLegal AI Security Checkpoint</h1>
             <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
-              Hệ thống đang tiến hành kiểm tra kết nối an toàn với **Cloudflare Turnstile Security**.
+              Vui lòng hoàn thành xác thực **Cloudflare Turnstile** bên dưới để mở khóa quyền truy cập hệ thống.
             </p>
           </div>
 
-          {/* Cloudflare Turnstile Interactive Security Widget */}
+          {/* Cloudflare Turnstile Widget with Automatic Success Callback */}
           <div className="w-full bg-slate-950 p-4 rounded-2xl border border-slate-800 flex justify-center shadow-inner min-h-[75px] items-center">
             <div 
               className="cf-turnstile" 
               data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAAENuyoUuTRh2b7uR'} 
+              data-callback="onTurnstileSuccess"
+              data-expired-callback="onTurnstileExpired"
+              data-error-callback="onTurnstileError"
               data-theme="dark"
             ></div>
           </div>
 
-          {/* Action Unlock Button */}
-          <button
-            onClick={() => setIsVerified(true)}
-            className="w-full py-3.5 px-6 rounded-xl bg-white hover:bg-slate-100 text-[#0B1727] text-xs font-extrabold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-          >
-            <span>Đã Xác Thực • Vào Hệ Thống</span>
-            <ArrowRight className="w-4 h-4 text-[#0B1727]" />
-          </button>
+          {/* Status Badge & Auto-Pass Button */}
+          <div className="w-full space-y-3">
+            {isTurnstilePassed ? (
+              <div className="w-full py-3.5 px-6 rounded-xl bg-emerald-600 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-2 animate-pulse">
+                <CheckCircle className="w-4 h-4 text-white" />
+                <span>Xác thực thành công! Đang chuyển vào hệ thống...</span>
+              </div>
+            ) : (
+              <button
+                disabled={!isTurnstilePassed}
+                className="w-full py-3.5 px-6 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 opacity-60 cursor-not-allowed text-xs font-extrabold flex items-center justify-center gap-2"
+              >
+                <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+                <span>Vui lòng tích chọn xác thực ở ô trên</span>
+              </button>
+            )}
+          </div>
 
           <div className="flex items-center gap-2 text-[11px] text-slate-400 border-t border-slate-800/80 pt-4 w-full justify-center">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Bảo mật thời gian thực bởi Cloudflare Edge Security</span>
+            <span>Bảo vệ chính chủ bởi Cloudflare Turnstile Security</span>
           </div>
         </div>
       </div>

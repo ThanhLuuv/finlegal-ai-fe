@@ -49,7 +49,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ backendUrl = 'http://loc
   };
 
   return (
-    <div className="p-4.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+    <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
       <div className="flex flex-col items-center justify-center p-5 border-2 border-dashed border-slate-300 hover:border-[#0B1727] rounded-xl transition-all bg-slate-50/70 hover:bg-slate-50 text-center cursor-pointer relative group">
         <input
           type="file"

@@ -176,7 +176,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           <div className="flex justify-center">
             <div 
               className="cf-turnstile" 
-              data-sitekey="0x4AAAAAAENuyoUuTRh2b7uR" 
+              data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAAENuyoUuTRh2b7uR'} 
               data-theme="light"
               data-size="compact"
             ></div>

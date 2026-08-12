@@ -184,7 +184,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="font-medium text-slate-500">Bảo vệ an ninh bởi Cloudflare Turnstile Defense</span>
+            <span className="font-medium text-slate-500">Bảo vệ an ninh bởi Cloudflare</span>
           </div>
         </div>
       </form>

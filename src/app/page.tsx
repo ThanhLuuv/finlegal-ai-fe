@@ -119,7 +119,7 @@ export default function HomePage() {
 
           <div className="flex items-center gap-2 text-[11px] text-slate-400 border-t border-slate-800/80 pt-4 w-full justify-center">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Bảo vệ chính chủ bởi Cloudflare Turnstile Security</span>
+            <span>Bảo vệ an ninh bởi Cloudflare</span>
           </div>
         </div>
       </div>

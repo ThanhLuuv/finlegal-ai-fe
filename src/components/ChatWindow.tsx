@@ -171,25 +171,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           </button>
         </div>
 
-        {/* Cloudflare Turnstile Active Widget & Security Badge */}
-        <div className="mt-2.5 flex flex-col gap-2">
-          <div className="flex justify-center">
-            <div 
-              className="cf-turnstile" 
-              data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAAENuyoUuTRh2b7uR'} 
-              data-theme="light"
-              data-size="compact"
-            ></div>
-          </div>
-          
-          <div className="flex items-center justify-between text-[10px] text-slate-400 px-1 border-t border-slate-100 pt-2">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Bảo vệ thời gian thực bởi **Cloudflare Turnstile Security**</span>
-            </div>
-            <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50">
-              Verified Sitekey: 0x4AAAAA...
-            </span>
+        {/* Cloudflare Turnstile Invisible Widget & Clean Security Badge */}
+        <div 
+          className="cf-turnstile" 
+          data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAAENuyoUuTRh2b7uR'} 
+          data-size="invisible"
+        ></div>
+        
+        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400 px-1">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Bảo vệ bảo mật bởi Cloudflare Turnstile Defense</span>
           </div>
         </div>
       </form>

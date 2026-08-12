@@ -7,6 +7,7 @@ import { SecurityGate } from '../components/SecurityGate';
 import { ChatWindow } from '../components/ChatWindow';
 import { FileUpload } from '../components/FileUpload';
 import { PDFViewer } from '../components/PDFViewer';
+import { AdminLogModal } from '../components/AdminLogModal';
 import { HelpCircle } from 'lucide-react';
 
 export default function HomePage() {
@@ -14,6 +15,7 @@ export default function HomePage() {
   const { messages, isStreaming, sendMessage } = useSSE(backendUrl);
   const [selectedDocId, setSelectedDocId] = useState<string | undefined>(undefined);
   const [docListKey, setDocListKey] = useState(0);
+  const [isLogsOpen, setIsLogsOpen] = useState(false);
 
   // Full-Screen Turnstile Security Verification State
   const [isVerified, setIsVerified] = useState(false);
@@ -52,7 +54,7 @@ export default function HomePage() {
   // Render Main Workspace Application
   return (
     <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-100 text-slate-900 font-sans">
-      <Header />
+      <Header onOpenLogs={() => setIsLogsOpen(true)} />
 
       {/* Main Workspace Layout */}
       <div className="flex-1 flex overflow-hidden p-4 gap-4 bg-slate-100">
@@ -96,6 +98,13 @@ export default function HomePage() {
           />
         </main>
       </div>
+
+      {/* Internal AI Tracing Logs Modal */}
+      <AdminLogModal
+        isOpen={isLogsOpen}
+        onClose={() => setIsLogsOpen(false)}
+        backendUrl={backendUrl}
+      />
     </div>
   );
 }

@@ -1,9 +1,13 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Activity } from 'lucide-react';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onOpenLogs?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenLogs }) => {
   return (
     <header className="h-16 border-b border-slate-800 bg-[#0B1727] px-6 flex items-center justify-between shrink-0 shadow-sm">
       <div className="flex items-center gap-3.5">
@@ -23,8 +27,19 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Top Status */}
+      {/* Top Status & Admin Tracing Button */}
       <div className="flex items-center gap-3">
+        {onOpenLogs && (
+          <button
+            onClick={onOpenLogs}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-medium transition-all cursor-pointer shadow-sm"
+            title="Xem nhật ký vết suy luận AI từ D1 Database"
+          >
+            <Activity className="w-4 h-4 text-emerald-400" />
+            <span>Tracing Logs D1</span>
+          </button>
+        )}
+
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs font-medium">
           <CheckCircle className="w-4 h-4 text-emerald-400" />
           <span>Hệ thống: Đã Xác Thực Cloudflare</span>

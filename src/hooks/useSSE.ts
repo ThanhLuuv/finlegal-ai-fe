@@ -35,8 +35,8 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
     setLatestAuditReport(null);
 
     try {
-      const headers: Record<string, string> = { 
-        'Content-Type': 'application/json' 
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
       };
 
       if (turnstileToken) {
@@ -80,7 +80,7 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
               if (currentEvent === 'thought') {
                 const thought = parsedData as AgentThoughtStep;
                 setActiveThoughts(prev => [...prev, thought]);
-                
+
                 setMessages(prev => prev.map(msg => {
                   if (msg.id === assistantMessageId) {
                     return {
@@ -93,7 +93,7 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
               } else if (currentEvent === 'audit_report') {
                 const audit = parsedData as AuditReport;
                 setLatestAuditReport(audit);
-                
+
                 setMessages(prev => prev.map(msg => {
                   if (msg.id === assistantMessageId) {
                     return { ...msg, auditReport: audit };
@@ -118,7 +118,7 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
                   if (msg.id === assistantMessageId) {
                     return {
                       ...msg,
-                      content: `❌ **Thông báo lỗi từ hệ thống:**\n${errMessage || 'Đã xảy ra lỗi trong quá trình xử lý đối soát.'}`,
+                      content: ` **Thông báo lỗi từ hệ thống:**\n${errMessage || 'Đã xảy ra lỗi trong quá trình xử lý đối soát.'}`,
                       isStreaming: false
                     };
                   }
@@ -137,7 +137,7 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
         if (msg.id === assistantMessageId) {
           return {
             ...msg,
-            content: `❌ **Lỗi kết nối:** Không thể kết nối với máy chủ FinLegal Engine (${errorMsg}).`,
+            content: ` **Lỗi kết nối:** Không thể kết nối với máy chủ FinLegal Engine (${errorMsg}).`,
             isStreaming: false
           };
         }
@@ -150,7 +150,7 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
         if (msg.id === assistantMessageId && msg.isStreaming) {
           return {
             ...msg,
-            content: msg.content || '❌ Rất tiếc, tiến trình xử lý bị ngắt kết nối trước khi hoàn tất.',
+            content: msg.content || ' Rất tiếc, tiến trình xử lý bị ngắt kết nối trước khi hoàn tất.',
             isStreaming: false
           };
         }

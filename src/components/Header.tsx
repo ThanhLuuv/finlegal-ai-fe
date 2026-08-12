@@ -1,14 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Database, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 
-interface HeaderProps {
-  isSeeding: boolean;
-  onSeedDatabase: () => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({ isSeeding, onSeedDatabase }) => {
+export const Header: React.FC = () => {
   return (
     <header className="h-16 border-b border-slate-800 bg-[#0B1727] px-6 flex items-center justify-between shrink-0 shadow-sm">
       <div className="flex items-center gap-3.5">
@@ -28,18 +23,8 @@ export const Header: React.FC<HeaderProps> = ({ isSeeding, onSeedDatabase }) => 
         </div>
       </div>
 
-      {/* Top Controls */}
+      {/* Top Status */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={onSeedDatabase}
-          disabled={isSeeding}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-white transition-all shadow-sm active:scale-95 cursor-pointer"
-          title="Tạo sẵn các bản ghi bán hàng mẫu để đối soát"
-        >
-          <Database className="w-4 h-4 text-white" />
-          <span>{isSeeding ? 'Đang nạp...' : 'Tạo Dữ liệu Mẫu'}</span>
-        </button>
-
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs font-medium">
           <CheckCircle className="w-4 h-4 text-emerald-400" />
           <span>Hệ thống: Đã Xác Thực Cloudflare</span>

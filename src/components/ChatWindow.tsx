@@ -37,9 +37,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   const samplePrompts = [
-    'Đối soát doanh thu Q2 trong Hợp đồng CTR-2024-001 so với số liệu ghi nhận thực tế trong hệ thống',
-    'Truy vấn tổng doanh thu theo từng quý (Q1, Q2) của tất cả khách hàng trong hệ thống bán hàng',
-    'So sánh giá trị hợp đồng Acme Corp với các giao dịch đã hoàn thành trong hệ thống'
+    'Phân tích các điều khoản ghi nhận doanh thu và thời hạn trong văn bản hợp đồng đã tải lên',
+    'Truy vấn tổng doanh thu ghi nhận thực tế theo từng quý trong cơ sở dữ liệu hệ thống bán hàng',
+    'Đối soát chi tiết giá trị hợp đồng PDF với các giao dịch thực tế đã phát sinh trong hệ thống'
   ];
 
   return (

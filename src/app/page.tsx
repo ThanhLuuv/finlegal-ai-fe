@@ -13,8 +13,6 @@ export default function HomePage() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://finlegal-backend.lvthanh-work.workers.dev';
   const { messages, isStreaming, sendMessage } = useSSE(backendUrl);
   const [selectedDocId, setSelectedDocId] = useState<string | undefined>(undefined);
-  const [isSeeding, setIsSeeding] = useState(false);
-  const [seedNotice, setSeedNotice] = useState<string | null>(null);
   
   // Full-Screen Turnstile Security Verification State
   const [isVerified, setIsVerified] = useState(false);
@@ -40,24 +38,6 @@ export default function HomePage() {
     }
   }, []);
 
-  const handleSeedDatabase = async () => {
-    setIsSeeding(true);
-    setSeedNotice('Đang nạp dữ liệu bán hàng mẫu vào hệ thống...');
-    try {
-      const res = await fetch(`${backendUrl}/api/admin/seed`, { method: 'POST' });
-      const data = await res.json() as { message?: string; error?: string };
-      if (res.ok) {
-        setSeedNotice('Khởi tạo dữ liệu bán hàng thành công!');
-      } else {
-        setSeedNotice(`Thông báo: ${data.error || 'Kiểm tra kết nối hệ thống'}`);
-      }
-    } catch (err) {
-      setSeedNotice('Thông báo: Chưa kết nối được với máy chủ.');
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
   // Render Full-Screen Light Theme Security Gate if not verified
   if (!isVerified) {
     return (
@@ -71,21 +51,12 @@ export default function HomePage() {
   // Render Main Workspace Application
   return (
     <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-100 text-slate-900 font-sans">
-      <Header 
-        isSeeding={isSeeding} 
-        onSeedDatabase={handleSeedDatabase} 
-      />
+      <Header />
 
       {/* Main Workspace Layout */}
       <div className="flex-1 flex overflow-hidden p-4 gap-4 bg-slate-100">
         {/* Left Sidebar: Upload & Scope Selection */}
         <aside className="w-80 shrink-0 flex flex-col gap-4 overflow-y-auto">
-          {seedNotice && (
-            <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 font-mono shadow-sm">
-              {seedNotice}
-            </div>
-          )}
-
           <FileUpload
             backendUrl={backendUrl}
             onUploadSuccess={(docId) => setSelectedDocId(docId)}

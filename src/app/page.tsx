@@ -13,7 +13,8 @@ export default function HomePage() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://finlegal-backend.lvthanh-work.workers.dev';
   const { messages, isStreaming, sendMessage } = useSSE(backendUrl);
   const [selectedDocId, setSelectedDocId] = useState<string | undefined>(undefined);
-  
+  const [docListKey, setDocListKey] = useState(0);
+
   // Full-Screen Turnstile Security Verification State
   const [isVerified, setIsVerified] = useState(false);
   const [isTurnstilePassed, setIsTurnstilePassed] = useState(false);
@@ -59,10 +60,14 @@ export default function HomePage() {
         <aside className="w-80 shrink-0 flex flex-col gap-4 overflow-y-auto">
           <FileUpload
             backendUrl={backendUrl}
-            onUploadSuccess={(docId) => setSelectedDocId(docId)}
+            onUploadSuccess={(docId) => {
+              setSelectedDocId(docId);
+              setDocListKey(prev => prev + 1);
+            }}
           />
 
           <PDFViewer
+            key={docListKey}
             backendUrl={backendUrl}
             selectedDocId={selectedDocId}
             onSelectDoc={(docId) => setSelectedDocId(docId)}

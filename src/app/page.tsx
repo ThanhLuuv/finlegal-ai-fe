@@ -33,21 +33,21 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-900 text-slate-100 font-sans">
-      {/* Deep Navy Blue Header Navigation */}
-      <header className="h-16 border-b border-slate-800 bg-slate-950 px-6 flex items-center justify-between shrink-0 shadow-md">
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-100/70 text-slate-900 font-sans">
+      {/* Deep Navy Blue Primary Brand Header Navigation */}
+      <header className="h-16 border-b border-slate-800 bg-[#0B1727] px-6 flex items-center justify-between shrink-0 shadow-sm">
         <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-sm">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 shadow-sm">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
             <h1 className="text-base font-bold text-white flex items-center gap-2.5 tracking-tight">
               FinLegal AI
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800/60">
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800">
                 Trợ lý Thông minh
               </span>
             </h1>
-            <p className="text-xs text-slate-400">Phân tích Hợp đồng & Đối soát Số liệu Bán hàng Doanh nghiệp</p>
+            <p className="text-xs text-slate-300">Phân tích Hợp đồng & Đối soát Số liệu Bán hàng Doanh nghiệp</p>
           </div>
         </div>
 
@@ -63,19 +63,19 @@ export default function HomePage() {
             <span>{isSeeding ? 'Đang nạp...' : 'Tạo Dữ liệu Mẫu'}</span>
           </button>
 
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-xs font-medium">
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-xs font-medium">
             <CheckCircle className="w-4 h-4 text-emerald-400" />
             <span>Hệ thống: Sẵn sàng</span>
           </div>
         </div>
       </header>
 
-      {/* Main Workspace Layout */}
-      <div className="flex-1 flex overflow-hidden p-4 gap-4 bg-slate-900">
+      {/* Main Workspace Layout (Clean Light Theme) */}
+      <div className="flex-1 flex overflow-hidden p-4 gap-4 bg-slate-100/70">
         {/* Left Sidebar: Upload & Scope Selection */}
         <aside className="w-80 shrink-0 flex flex-col gap-4 overflow-y-auto">
           {seedNotice && (
-            <div className="p-3.5 rounded-xl bg-blue-950/80 border border-blue-800 text-xs text-blue-200 font-mono shadow-sm">
+            <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 font-mono shadow-sm">
               {seedNotice}
             </div>
           )}
@@ -92,12 +92,12 @@ export default function HomePage() {
           />
 
           {/* User Friendly Guide Box */}
-          <div className="mt-auto p-4 rounded-2xl bg-slate-950 border border-slate-800 shadow-sm space-y-2.5 text-xs text-slate-300">
-            <div className="flex items-center gap-2 text-white font-bold">
-              <HelpCircle className="w-4 h-4 text-blue-400" />
+          <div className="mt-auto p-4.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2.5 text-xs text-slate-700">
+            <div className="flex items-center gap-2 text-slate-900 font-bold">
+              <HelpCircle className="w-4 h-4 text-blue-600" />
               <span>Hướng Dẫn Sử Dụng</span>
             </div>
-            <ol className="space-y-2 text-xs text-slate-400 list-decimal pl-4 leading-relaxed">
+            <ol className="space-y-2 text-xs text-slate-600 list-decimal pl-4 leading-relaxed">
               <li>Tải file Hợp đồng/Báo cáo (PDF) ở khung trên.</li>
               <li>Chọn file cụ thể hoặc đối soát toàn bộ văn bản.</li>
               <li>Gửi câu hỏi hoặc chọn các prompt gợi ý bên phải để nhận báo cáo đối soát.</li>

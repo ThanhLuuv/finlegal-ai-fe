@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { DocumentRecord } from '../types';
-import { FileText, RefreshCw, CheckCircle2, Trash2 } from 'lucide-react';
+import { FileText, RefreshCw, CheckCircle2, Trash2, Loader2 } from 'lucide-react';
 
 interface PDFViewerProps {
   backendUrl?: string;
@@ -120,7 +120,7 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({
                   }`}
                   title="Xóa tài liệu này"
                 >
-                  <Trash2 className={`w-3.5 h-3.5 ${isDeleting ? 'animate-spin' : ''}`} />
+                  {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" /> : <Trash2 className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>

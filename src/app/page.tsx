@@ -52,11 +52,11 @@ export default function HomePage() {
 
   // Render Main Workspace Application
   return (
-    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans selection:bg-blue-600 selection:text-white">
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-100 text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
       <Header onOpenLogs={() => setIsLogsOpen(true)} />
 
       {/* Main Workspace Layout */}
-      <div className="flex-1 flex overflow-hidden p-3 sm:p-4 gap-3 sm:gap-4 bg-slate-950">
+      <div className="flex-1 flex overflow-hidden p-3 sm:p-4 gap-3 sm:gap-4 bg-slate-100">
         {/* Left Sidebar: Document Management Hub */}
         <aside className="w-72 sm:w-80 shrink-0 flex flex-col gap-3.5 overflow-y-auto pr-0.5">
           <DocumentManager
@@ -69,25 +69,25 @@ export default function HomePage() {
           />
 
           {/* Guide Box */}
-          <div className="mt-auto p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-md space-y-2.5 text-xs text-slate-300 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-white font-bold">
-              <div className="p-1 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30">
+          <div className="mt-auto p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-2.5 text-xs text-slate-700">
+            <div className="flex items-center gap-2 text-slate-900 font-bold">
+              <div className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
                 <HelpCircle className="w-3.5 h-3.5" />
               </div>
               <span>Tính Năng Nổi Bật</span>
             </div>
-            <ul className="space-y-2 text-[11px] text-slate-400 leading-relaxed">
+            <ul className="space-y-2 text-[11px] text-slate-600 leading-relaxed">
               <li className="flex items-start gap-1.5">
-                <span className="text-blue-400 font-bold shrink-0">⚡</span>
-                <span><strong className="text-slate-200">Đọc hiểu siêu tốc</strong>: Tự động trích xuất các điều khoản hợp đồng & số liệu tài chính.</span>
+                <span className="text-blue-600 font-bold shrink-0">⚡</span>
+                <span><strong className="text-slate-800">Đọc hiểu siêu tốc</strong>: Tự động trích xuất các điều khoản hợp đồng & số liệu tài chính.</span>
               </li>
               <li className="flex items-start gap-1.5">
-                <span className="text-blue-400 font-bold shrink-0">🎯</span>
-                <span><strong className="text-slate-200">Hỏi đáp chính xác</strong>: Tìm kiếm đúng vị trí và trả lời có căn cứ rõ ràng.</span>
+                <span className="text-blue-600 font-bold shrink-0">🎯</span>
+                <span><strong className="text-slate-800">Hỏi đáp chính xác</strong>: Tìm kiếm đúng vị trí và trả lời có căn cứ rõ ràng.</span>
               </li>
               <li className="flex items-start gap-1.5">
-                <span className="text-blue-400 font-bold shrink-0">🛡️</span>
-                <span><strong className="text-slate-200">Bảo mật tuyệt đối</strong>: Dữ liệu của bạn được phân quyền & bảo vệ an toàn.</span>
+                <span className="text-blue-600 font-bold shrink-0">🛡️</span>
+                <span><strong className="text-slate-800">Bảo mật tuyệt đối</strong>: Dữ liệu của bạn được phân quyền & bảo vệ an toàn.</span>
               </li>
             </ul>
           </div>

@@ -148,8 +148,30 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
                   {/* Response Content */}
                   {msg.content ? (
-                    <div className="prose prose-slate dark:prose-invert prose-xs max-w-none">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    <div className="space-y-3">
+                      <div className="prose prose-slate dark:prose-invert prose-xs max-w-none">
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      </div>
+
+                      {/* Verified Source Citations Cards */}
+                      {msg.sources && msg.sources.length > 0 && (
+                        <div className="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-800 space-y-1.5">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                            <FileText className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                            Nguồn trích dẫn đã xác minh ({msg.sources.length}):
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {msg.sources.map((src, sIdx) => (
+                              <div
+                                key={sIdx}
+                                className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 text-[11px] font-medium border border-slate-200 dark:border-slate-700 flex items-center gap-1 shadow-2xs"
+                              >
+                                <span>{src.displayLabel}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     msg.isStreaming && (

@@ -34,7 +34,11 @@ export const AdminLogModal: React.FC<AdminLogModalProps> = ({
   const fetchLogs = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${backendUrl}/api/admin/logs`);
+      const res = await fetch(`${backendUrl}/api/admin/logs`, {
+        headers: {
+          'x-admin-key': 'admin_secret_default'
+        }
+      });
       if (res.ok) {
         const data = await res.json() as { logs: D1ChatLog[] };
         setLogs(data.logs || []);

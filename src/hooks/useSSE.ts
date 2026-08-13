@@ -36,17 +36,25 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
 
     try {
       const headers: Record<string, string> = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-tenant-id': 'tenant_default',
+        'x-user-id': 'user_default'
       };
 
       if (turnstileToken) {
         headers['X-Turnstile-Token'] = turnstileToken;
       }
 
+      // Format conversation history for multi-turn query contextualization
+      const historyPayload = messages.slice(-4).map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.content
+      }));
+
       const response = await fetch(`${backendUrl}/api/chat/stream`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ prompt, docId }),
+        body: JSON.stringify({ prompt, docId, history: historyPayload }),
       });
 
       if (!response.ok || !response.body) {
@@ -101,12 +109,13 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
                   return msg;
                 }));
               } else if (currentEvent === 'final_answer') {
-                const { answer } = parsedData;
+                const { answer, sources } = parsedData;
                 setMessages(prev => prev.map(msg => {
                   if (msg.id === assistantMessageId) {
                     return {
                       ...msg,
                       content: answer,
+                      sources: sources || msg.sources,
                       isStreaming: false
                     };
                   }

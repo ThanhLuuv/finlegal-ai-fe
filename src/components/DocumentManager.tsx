@@ -36,7 +36,12 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
   const fetchDocuments = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${backendUrl}/api/documents`);
+      const res = await fetch(`${backendUrl}/api/documents`, {
+        headers: {
+          'x-tenant-id': 'tenant_default',
+          'x-user-id': 'user_default'
+        }
+      });
       if (res.ok) {
         const data = await res.json() as { documents: DocumentRecord[] };
         setDocuments(data.documents || []);
@@ -59,9 +64,9 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     if (!file) return;
 
     const ext = file.name.split('.').pop()?.toLowerCase() || '';
-    const allowedExts = ['pdf', 'docx', 'xlsx', 'pptx', 'txt', 'csv'];
+    const allowedExts = ['pdf', 'txt', 'csv'];
     if (!allowedExts.includes(ext)) {
-      setStatusMessage({ text: `Định dạng .${ext} chưa được hỗ trợ. Vui lòng chọn file PDF, DOCX, XLSX hoặc TXT.`, isError: true });
+      setStatusMessage({ text: `Định dạng .${ext} chưa được hỗ trợ. Vui lòng chọn file PDF, TXT hoặc CSV.`, isError: true });
       return;
     }
 
@@ -83,6 +88,10 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
 
       const res = await fetch(endpoint, {
         method: 'POST',
+        headers: {
+          'x-tenant-id': 'tenant_default',
+          'x-user-id': 'user_default'
+        },
         body: formData
       });
 
@@ -113,7 +122,11 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     setDeletingId(docId);
     try {
       const res = await fetch(`${backendUrl}/api/documents/${docId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'x-tenant-id': 'tenant_default',
+          'x-user-id': 'user_default'
+        }
       });
       if (res.ok) {
         if (selectedDocId === docId) {
@@ -137,10 +150,17 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             <CheckCircle2 className="w-3 h-3" /> Sẵn sàng
           </span>
         );
+      case 'EXTRACTING':
       case 'PARSING':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-600 dark:bg-blue-400/20 dark:text-blue-300 border border-blue-500/20 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin" /> Đang Parser
+            <Loader2 className="w-3 h-3 animate-spin" /> Trích xuất
+          </span>
+        );
+      case 'STRUCTURING':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-600 dark:bg-cyan-400/20 dark:text-cyan-300 border border-cyan-500/20 animate-pulse">
+            <Loader2 className="w-3 h-3 animate-spin" /> Cấu trúc
           </span>
         );
       case 'CHUNKING':
@@ -158,7 +178,13 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
       case 'INDEXING':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:bg-amber-400/20 dark:text-amber-300 border border-amber-500/20 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin" /> Vectorize Index
+            <Loader2 className="w-3 h-3 animate-spin" /> Vectorize
+          </span>
+        );
+      case 'DELETING':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-600 dark:bg-rose-400/20 dark:text-rose-300 border border-rose-500/20 animate-pulse">
+            <Loader2 className="w-3 h-3 animate-spin" /> Đang xóa
           </span>
         );
       case 'FAILED':

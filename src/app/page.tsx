@@ -52,13 +52,13 @@ export default function HomePage() {
 
   // Render Main Workspace Application
   return (
-    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans selection:bg-blue-600 selection:text-white">
       <Header onOpenLogs={() => setIsLogsOpen(true)} />
 
       {/* Main Workspace Layout */}
-      <div className="flex-1 flex overflow-hidden p-4 gap-4 bg-slate-100 dark:bg-slate-950">
+      <div className="flex-1 flex overflow-hidden p-3 sm:p-4 gap-3 sm:gap-4 bg-slate-950">
         {/* Left Sidebar: Document Management Hub */}
-        <aside className="w-84 shrink-0 flex flex-col gap-4 overflow-y-auto">
+        <aside className="w-72 sm:w-80 shrink-0 flex flex-col gap-3.5 overflow-y-auto pr-0.5">
           <DocumentManager
             backendUrl={backendUrl}
             selectedDocId={selectedDocId}
@@ -69,21 +69,32 @@ export default function HomePage() {
           />
 
           {/* Guide Box */}
-          <div className="mt-auto p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2 text-xs text-slate-700 dark:text-slate-300">
-            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
-              <HelpCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span>Quy Trình RAG Nâng Cao</span>
+          <div className="mt-auto p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-md space-y-2.5 text-xs text-slate-300 backdrop-blur-sm">
+            <div className="flex items-center gap-2 text-white font-bold">
+              <div className="p-1 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30">
+                <HelpCircle className="w-3.5 h-3.5" />
+              </div>
+              <span>Tính Năng Nổi Bật</span>
             </div>
-            <ol className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 list-decimal pl-4 leading-relaxed">
-              <li><strong className="text-slate-800 dark:text-slate-200">Flow A</strong>: Upload file ➔ Lưu R2/D1 ➔ Phân tích cấu trúc ➔ BGE-M3 Embedding ➔ Vectorize Indexing.</li>
-              <li><strong className="text-slate-800 dark:text-slate-200">Flow B</strong>: Nhập câu hỏi ➔ Query Rewrite (Llama 3.1 8B) ➔ Top 20 Vector Search ➔ Top 5 Reranker ➔ Qwen3 30B LLM Answer + Citations.</li>
-              <li><strong className="text-slate-800 dark:text-slate-200">Flow C/D</strong>: Quản lý phiên bản (v1/v2), xóa triệt để hoặc tự động OCR nếu file scan.</li>
-            </ol>
+            <ul className="space-y-2 text-[11px] text-slate-400 leading-relaxed">
+              <li className="flex items-start gap-1.5">
+                <span className="text-blue-400 font-bold shrink-0">⚡</span>
+                <span><strong className="text-slate-200">Đọc hiểu siêu tốc</strong>: Tự động trích xuất các điều khoản hợp đồng & số liệu tài chính.</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-blue-400 font-bold shrink-0">🎯</span>
+                <span><strong className="text-slate-200">Hỏi đáp chính xác</strong>: Tìm kiếm đúng vị trí và trả lời có căn cứ rõ ràng.</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-blue-400 font-bold shrink-0">🛡️</span>
+                <span><strong className="text-slate-200">Bảo mật tuyệt đối</strong>: Dữ liệu của bạn được phân quyền & bảo vệ an toàn.</span>
+              </li>
+            </ul>
           </div>
         </aside>
 
         {/* Right Main Workspace: Interactive Chat Window */}
-        <main className="flex-1 h-full overflow-hidden">
+        <main className="flex-1 min-w-0 h-full overflow-hidden">
           <ChatWindow
             messages={messages}
             isStreaming={isStreaming}

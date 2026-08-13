@@ -9,40 +9,38 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onOpenLogs }) => {
   return (
-    <header className="h-16 border-b border-slate-800 bg-[#0B1727] px-6 flex items-center justify-between shrink-0 shadow-sm">
-      <div className="flex items-center gap-3.5">
-        <img 
-          src="/logo.png" 
-          alt="FinLegal AI Logo" 
-          className="w-10 h-10 rounded-xl object-cover border border-slate-700 shadow-sm"
-        />
+    <header className="h-16 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md px-5 flex items-center justify-between shrink-0 shadow-md">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md border border-blue-400/20 font-extrabold text-sm">
+          FL
+        </div>
         <div>
-          <h1 className="text-base font-bold text-white flex items-center gap-2.5 tracking-tight">
+          <h1 className="text-sm font-bold text-white flex items-center gap-2 tracking-tight">
             FinLegal AI
-            <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-white border border-slate-700">
-              Trợ lý Thông minh
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              Trợ Lý Doanh Nghiệp
             </span>
           </h1>
-          <p className="text-xs text-slate-300">Phân tích Hợp đồng & Đối soát Số liệu Bán hàng Doanh nghiệp</p>
+          <p className="text-[11px] text-slate-400">Phân tích Hợp đồng & Đối soát Số liệu Bán hàng Doanh nghiệp</p>
         </div>
       </div>
 
       {/* Top Status & Admin Tracing Button */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         {onOpenLogs && (
           <button
             onClick={onOpenLogs}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-medium transition-all cursor-pointer shadow-sm"
-            title="Xem nhật ký vết suy luận AI từ D1 Database"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 hover:text-white text-xs font-semibold transition-all cursor-pointer shadow-xs"
+            title="Xem lịch sử suy luận & tra cứu"
           >
-            <Activity className="w-4 h-4 text-emerald-400" />
-            <span>Tracing Logs D1</span>
+            <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+            <span>Nhật Ký Suy Luận</span>
           </button>
         )}
 
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs font-medium">
-          <CheckCircle className="w-4 h-4 text-emerald-400" />
-          <span>Hệ thống: Đã Xác Thực Cloudflare</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Hệ Thống Sẵn Sàng</span>
         </div>
       </div>
     </header>

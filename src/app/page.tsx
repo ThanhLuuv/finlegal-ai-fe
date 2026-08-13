@@ -7,7 +7,7 @@ import { SecurityGate } from '../components/SecurityGate';
 import { ChatWindow } from '../components/ChatWindow';
 import { DocumentManager } from '../components/DocumentManager';
 import { AdminLogModal } from '../components/AdminLogModal';
-import { HelpCircle, ShieldCheck, Zap } from 'lucide-react';
+import { HelpCircle, ShieldCheck, Zap, X } from 'lucide-react';
 
 export default function HomePage() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://finlegal-backend.lvthanh-work.workers.dev';
@@ -15,6 +15,7 @@ export default function HomePage() {
   const [selectedDocId, setSelectedDocId] = useState<string | undefined>(undefined);
   const [selectedDocName, setSelectedDocName] = useState<string | undefined>(undefined);
   const [isLogsOpen, setIsLogsOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const [isVerified, setIsVerified] = useState(false);
   const [isTurnstilePassed, setIsTurnstilePassed] = useState(false);
@@ -49,18 +50,47 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[#f8fafc] text-slate-900 font-sans selection:bg-[#0f172a] selection:text-white">
-      <Header onOpenLogs={() => setIsLogsOpen(true)} />
+      <Header 
+        onOpenLogs={() => setIsLogsOpen(true)} 
+        onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+      />
 
       {/* Main Layout */}
-      <div className="flex-1 flex overflow-hidden p-3 sm:p-4 gap-3 sm:gap-4 bg-[#f8fafc]">
-        {/* Left Sidebar: Document Management Hub */}
-        <aside className="w-72 sm:w-80 shrink-0 flex flex-col gap-3.5 overflow-y-auto pr-0.5">
+      <div className="flex-1 flex overflow-hidden p-2.5 sm:p-4 gap-3 sm:gap-4 bg-[#f8fafc] relative">
+        {/* Mobile Off-Canvas Drawer Overlay */}
+        {isMobileSidebarOpen && (
+          <div 
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="md:hidden fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs transition-opacity"
+          />
+        )}
+
+        {/* Sidebar: Document Management Hub */}
+        <aside className={`
+          fixed md:relative inset-y-0 left-0 z-40 md:z-auto
+          w-80 sm:w-80 shrink-0 bg-[#f8fafc] md:bg-transparent
+          flex flex-col gap-3.5 overflow-y-auto p-4 md:p-0 pr-1
+          transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none
+          ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
+          {/* Mobile Drawer Close Button */}
+          <div className="md:hidden flex items-center justify-between pb-1 border-b border-slate-200">
+            <span className="font-bold text-xs text-[#0f172a]">Quản Lý Kho Tài Liệu</span>
+            <button
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="p-1 rounded-lg hover:bg-slate-200 text-slate-500"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
           <DocumentManager
             backendUrl={backendUrl}
             selectedDocId={selectedDocId}
             onSelectDoc={(docId) => {
               setSelectedDocId(docId);
               if (!docId) setSelectedDocName(undefined);
+              setIsMobileSidebarOpen(false); // Auto close drawer on mobile selection
             }}
           />
 

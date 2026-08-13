@@ -11,7 +11,8 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Layers,
-  Sparkles
+  Sparkles,
+  Eye
 } from 'lucide-react';
 
 interface DocumentManagerProps {
@@ -335,6 +336,20 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                   <span>{doc.total_pages || 1} trang • {doc.total_chunks || 0} chunks</span>
 
                   <div className="flex items-center gap-2">
+                    {/* View / Preview button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(`${backendUrl}/api/documents/${doc.doc_id}/view`, '_blank');
+                      }}
+                      className={`p-1 rounded transition-colors cursor-pointer ${
+                        isSelected ? 'hover:bg-slate-800 text-slate-200' : 'hover:bg-slate-200 text-slate-600'
+                      }`}
+                      title="Xem trước file gốc"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+
                     {/* Version upload trigger button */}
                     <label 
                       onClick={(e) => e.stopPropagation()} 

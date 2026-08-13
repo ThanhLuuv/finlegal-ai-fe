@@ -33,7 +33,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<{ text: string; isError?: boolean } | null>(null);
 
-  const fetchDocuments = async () => {
+  const fetchDocuments = React.useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await fetch(`${backendUrl}/api/documents`, {
@@ -51,13 +51,27 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [backendUrl]);
 
+  // Initial fetch on mount
   useEffect(() => {
     fetchDocuments();
-    const interval = setInterval(fetchDocuments, 6000);
-    return () => clearInterval(interval);
-  }, [backendUrl]);
+  }, [fetchDocuments]);
+
+  // Smart Polling: Only poll if at least 1 document is actively processing (EXTRACTING, CHUNKING, EMBEDDING, INDEXING)
+  useEffect(() => {
+    const hasProcessingDoc = documents.some(
+      d => d.processing_status && d.processing_status !== 'READY' && d.processing_status !== 'FAILED'
+    );
+
+    if (!hasProcessingDoc) return;
+
+    const timer = setTimeout(() => {
+      fetchDocuments();
+    }, 8000);
+
+    return () => clearTimeout(timer);
+  }, [documents, fetchDocuments]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, targetDocIdForVersion?: string) => {
     const file = event.target.files?.[0];

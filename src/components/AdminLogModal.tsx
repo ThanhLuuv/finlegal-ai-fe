@@ -65,11 +65,11 @@ export const AdminLogModal: React.FC<AdminLogModalProps> = ({
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-blue-600 text-white shadow-xs">
+            <div className="p-2 rounded-xl bg-[#0f172a] text-white shadow-xs">
               <Activity className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Nhật Ký Suy Luận & Tra Cứu AI</h2>
+              <h2 className="text-sm font-bold text-[#0f172a]">LexiFin AI - Nhật Ký Suy Luận & Tra Cứu AI</h2>
               <p className="text-xs text-slate-500">Giám sát chi tiết các bước xử lý và căn cứ trích dẫn của hệ thống</p>
             </div>
           </div>
@@ -98,55 +98,44 @@ export const AdminLogModal: React.FC<AdminLogModalProps> = ({
               Chưa có nhật ký suy luận nào được ghi nhận.
             </div>
           ) : (
-            logs.map(log => {
+            logs.map((log) => {
               const isExpanded = expandedId === log.id;
               let thoughts: AgentThoughtStep[] = [];
               try {
                 thoughts = JSON.parse(log.thought_process || '[]');
               } catch {
-                // ignore json parse error
+                thoughts = [];
               }
-
-              const isHighRisk = log.risk_level === 'HIGH';
-              const isMediumRisk = log.risk_level === 'MEDIUM';
 
               return (
                 <div
                   key={log.id}
-                  className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs transition-all hover:border-slate-300"
+                  className="rounded-xl border border-slate-200 bg-white overflow-hidden text-xs shadow-2xs hover:border-slate-300 transition-all"
                 >
-                  <div
+                  <button
                     onClick={() => setExpandedId(isExpanded ? null : log.id)}
-                    className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors"
+                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors text-left cursor-pointer"
                   >
-                    <div className="flex items-center gap-3 truncate pr-4">
-                      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase shrink-0 ${
-                        log.intent === 'HYBRID_AUDIT' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                        log.intent === 'RAG_ONLY' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
-                        log.intent === 'SQL_ONLY' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                        'bg-slate-100 text-slate-700'
-                      }`}>
-                        {log.intent || 'RAG_ONLY'}
+                    <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 font-semibold shrink-0">
+                        ID #{log.id}
                       </span>
 
-                      {log.risk_level && log.risk_level !== 'NONE' && (
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1 shrink-0 ${
-                          isHighRisk ? 'bg-rose-50 text-rose-700 border border-rose-200' :
-                          isMediumRisk ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                          'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        }`}>
-                          <ShieldAlert className="w-3 h-3" />
-                          {log.risk_level} RISK
-                        </span>
-                      )}
-
-                      <p className="text-xs font-semibold text-slate-800 truncate">
-                        {log.user_prompt}
-                      </p>
+                      <div className="truncate flex-1">
+                        <p className="font-bold text-slate-900 truncate text-xs">{log.user_prompt}</p>
+                        <p className="text-[11px] text-slate-500 font-mono truncate">
+                          Intent: {log.intent || 'RAG_QUERY'} • Session: {log.session_id.slice(0, 8)}...
+                        </p>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-[10px] text-slate-400">
+                      {log.risk_level === 'HIGH' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                          <ShieldAlert className="w-3 h-3 text-rose-600" /> High Risk
+                        </span>
+                      )}
+                      <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
                         {new Date(log.created_at).toLocaleString()}
                       </span>
                       {isExpanded ? (
@@ -155,29 +144,35 @@ export const AdminLogModal: React.FC<AdminLogModalProps> = ({
                         <ChevronDown className="w-4 h-4 text-slate-400" />
                       )}
                     </div>
-                  </div>
+                  </button>
 
-                  {/* Expanded Detail Panel */}
+                  {/* Expanded Trace Details */}
                   {isExpanded && (
-                    <div className="p-4 bg-slate-50 border-t border-slate-100 space-y-4 text-xs">
-                      <div className="grid grid-cols-2 gap-4 text-[11px] font-mono text-slate-600 bg-white p-3 rounded-xl border border-slate-200">
-                        <div><strong className="text-slate-900">Trace ID:</strong> {log.trace_id}</div>
-                        <div><strong className="text-slate-900">Session ID:</strong> {log.session_id}</div>
+                    <div className="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3 font-mono text-[11px]">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                          User Prompt:
+                        </span>
+                        <div className="p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 font-sans">
+                          {log.user_prompt}
+                        </div>
                       </div>
 
-                      {/* Agent Thought Steps */}
+                      {/* Detailed Agent Thought Steps */}
                       <div>
-                        <h4 className="font-bold text-slate-900 mb-2 flex items-center gap-1.5 text-xs">
-                          <Terminal className="w-3.5 h-3.5 text-blue-600" />
-                          <span>Vết Suy Luận Tra Cứu ({thoughts.length} bước)</span>
-                        </h4>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                          Thought Process Trajectory ({thoughts.length} steps):
+                        </span>
                         <div className="space-y-2">
-                          {thoughts.map((step, idx) => (
-                            <div key={idx} className="bg-white text-slate-800 p-3 rounded-xl font-mono text-[11px] border border-slate-200">
-                              <div className="text-blue-600 font-bold mb-1">[{step.agent}]</div>
-                              <div className="text-slate-700">{String(step.thought)}</div>
-                              {Boolean(step.data) && (
-                                <pre className="mt-2 p-2 rounded-lg bg-slate-900 text-emerald-400 text-[10px] overflow-x-auto border border-slate-800">
+                          {thoughts.map((step, sIdx) => (
+                            <div key={sIdx} className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-1">
+                              <div className="flex items-center justify-between text-[10px]">
+                                <span className="font-bold text-[#0f172a] font-mono">[{step.agent}] {step.status}</span>
+                                <span className="text-slate-400">{new Date(step.timestamp).toLocaleTimeString()}</span>
+                              </div>
+                              <p className="text-slate-700 font-sans text-xs">{step.thought}</p>
+                              {step.data !== undefined && step.data !== null && (
+                                <pre className="p-2 rounded bg-slate-900 text-slate-100 text-[10px] overflow-x-auto max-h-32">
                                   {JSON.stringify(step.data, null, 2)}
                                 </pre>
                               )}
@@ -188,8 +183,10 @@ export const AdminLogModal: React.FC<AdminLogModalProps> = ({
 
                       {/* Final Answer */}
                       <div>
-                        <h4 className="font-bold text-slate-900 mb-1">Phản Hồi Cuối Cùng</h4>
-                        <div className="p-3 bg-white rounded-xl border border-slate-200 text-slate-800 whitespace-pre-wrap leading-relaxed">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                          Final System Answer Output:
+                        </span>
+                        <div className="p-3 rounded-lg bg-white border border-slate-200 text-slate-800 font-sans leading-relaxed text-xs">
                           {log.final_response}
                         </div>
                       </div>

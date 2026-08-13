@@ -4,11 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-100 selection:text-blue-900;
+    @apply bg-[#f8fafc] text-slate-900 font-sans antialiased selection:bg-[#0f172a] selection:text-white;
   }
 }
 
-/* Minimalist Clean Panel Styling */
+/* Executive Clean Panels */
 .clean-panel {
   background: #ffffff;
   border: 1px solid #e2e8f0;

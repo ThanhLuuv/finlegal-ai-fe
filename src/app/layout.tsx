@@ -3,7 +3,7 @@ import Script from 'next/script';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'FinLegal AI - Hệ thống Trợ lý AI Tài chính & Pháp lý Doanh nghiệp',
+  title: 'LexiFin AI - Trợ Lý AI Pháp Lý & Kiểm Toán Tài Chính Doanh Nghiệp',
   description: 'Tra cứu hợp đồng, số liệu doanh thu và kiểm toán rủi ro tự động',
   icons: {
     icon: '/icon.png',
@@ -25,7 +25,7 @@ export default function RootLayout({
           strategy="afterInteractive" 
         />
       </head>
-      <body className="bg-slate-50 text-slate-900 min-h-screen">
+      <body className="bg-[#f8fafc] text-slate-900 min-h-screen selection:bg-[#0f172a] selection:text-white">
         {children}
       </body>
     </html>

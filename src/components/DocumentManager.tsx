@@ -53,12 +53,10 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     }
   }, [backendUrl]);
 
-  // Initial fetch on mount
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
 
-  // Smart Polling: Only poll if at least 1 document is actively processing (EXTRACTING, CHUNKING, EMBEDDING, INDEXING)
   useEffect(() => {
     const hasProcessingDoc = documents.some(
       d => d.processing_status && d.processing_status !== 'READY' && d.processing_status !== 'FAILED'
@@ -109,29 +107,28 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
         body: formData
       });
 
-      const data = await res.json() as { success?: boolean; error?: string; docId?: string; fileName?: string; version?: string; message?: string };
-
-      if (!res.ok || data.error) {
-        throw new Error(data.error || 'Upload failed');
-      }
-
-      setStatusMessage({ text: data.message || `Tải lên thành công file: ${file.name}` });
-      if (data.docId) {
+      if (res.ok) {
+        const data = await res.json() as { docId: string };
+        setStatusMessage({ text: 'Tải lên tài liệu thành công!' });
         onSelectDoc(data.docId);
+        fetchDocuments();
+        if (onDocumentChange) onDocumentChange();
+      } else {
+        const err = await res.json() as { error?: string };
+        setStatusMessage({ text: err.error || 'Lỗi khi tải tài liệu lên.', isError: true });
       }
-      await fetchDocuments();
-      if (onDocumentChange) onDocumentChange();
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      setStatusMessage({ text: `Lỗi: ${errorMsg}`, isError: true });
+      console.error('Failed to upload file:', err);
+      setStatusMessage({ text: 'Lỗi kết nối khi tải tài liệu.', isError: true });
     } finally {
       setIsUploading(false);
+      event.target.value = '';
     }
   };
 
-  const handleDeleteDocument = async (docId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!confirm('Bạn có chắc chắn muốn xóa tài liệu này khỏi hệ thống?')) return;
+  const handleDeleteDocument = async (docId: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (!window.confirm('Bạn có chắc chắn muốn xóa tài liệu này không?')) return;
 
     setDeletingId(docId);
     try {
@@ -142,11 +139,12 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
           'x-user-id': 'user_default'
         }
       });
+
       if (res.ok) {
         if (selectedDocId === docId) {
           onSelectDoc(undefined);
         }
-        await fetchDocuments();
+        fetchDocuments();
         if (onDocumentChange) onDocumentChange();
       }
     } catch (err) {
@@ -156,81 +154,75 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     }
   };
 
-  const renderStatusBadge = (status?: string) => {
+  const renderStatusBadge = (status?: string, isSelected?: boolean) => {
     switch (status) {
       case 'READY':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <CheckCircle2 className="w-3 h-3" /> Sẵn sàng
+          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+            isSelected 
+              ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60' 
+              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          }`}>
+            <CheckCircle2 className="w-3 h-3 shrink-0" /> Sẵn sàng
           </span>
         );
       case 'EXTRACTING':
       case 'PARSING':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin" /> Trích xuất
-          </span>
-        );
-      case 'STRUCTURING':
-        return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin" /> Cấu trúc
+          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold border animate-pulse ${
+            isSelected
+              ? 'bg-blue-950/80 text-blue-300 border-blue-700/60'
+              : 'bg-blue-50 text-blue-700 border-blue-200'
+          }`}>
+            <Loader2 className="w-3 h-3 animate-spin shrink-0" /> Trích xuất
           </span>
         );
       case 'CHUNKING':
-        return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin" /> Phân đoạn
-          </span>
-        );
       case 'EMBEDDING':
-        return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin" /> Đang mã hóa
-          </span>
-        );
       case 'INDEXING':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin" /> Đang lưu trữ
-          </span>
-        );
-      case 'DELETING':
-        return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 animate-pulse">
-            <Loader2 className="w-3 h-3 animate-spin" /> Đang xóa
+          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold border animate-pulse ${
+            isSelected
+              ? 'bg-amber-950/80 text-amber-300 border-amber-700/60'
+              : 'bg-amber-50 text-amber-700 border-amber-200'
+          }`}>
+            <Loader2 className="w-3 h-3 animate-spin shrink-0" /> Đang xử lý
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-            <AlertCircle className="w-3 h-3" /> Lỗi xử lý
+          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+            isSelected
+              ? 'bg-rose-950/80 text-rose-300 border-rose-700/60'
+              : 'bg-rose-50 text-rose-700 border-rose-200'
+          }`}>
+            <AlertCircle className="w-3 h-3 shrink-0" /> Lỗi xử lý
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20">
-            <Loader2 className="w-3 h-3 animate-spin" /> Đang tải...
+          <span className="inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">
+            <Loader2 className="w-3 h-3 animate-spin shrink-0" /> Đang tải...
           </span>
         );
     }
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3.5">
       {/* Upload Zone */}
-      <div className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-3">
+      <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-            <Sparkles className="w-4 h-4 text-blue-600" />
+          <div className="flex items-center gap-2 text-xs font-bold text-[#0f172a]">
+            <Sparkles className="w-4 h-4 text-[#0f172a]" />
             <span>Tải Lên Tài Liệu</span>
           </div>
-          <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
             PDF, TXT, CSV
           </span>
         </div>
 
-        <div className="relative group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-500 bg-slate-50/70 hover:bg-blue-50/40 transition-all cursor-pointer text-center">
+        <div className="relative group flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-[#0f172a] bg-slate-50/70 hover:bg-slate-100/60 transition-all cursor-pointer text-center">
           <input
             type="file"
             accept=".pdf,.txt,.csv"
@@ -240,21 +232,21 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
           />
 
           {isUploading ? (
-            <div className="flex flex-col items-center gap-2 py-1.5">
-              <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
-              <p className="text-xs font-medium text-slate-600 font-mono">Đang đọc & phân tích tài liệu...</p>
+            <div className="flex flex-col items-center gap-2 py-2">
+              <Loader2 className="w-6 h-6 text-[#0f172a] animate-spin" />
+              <p className="text-xs font-medium text-slate-700 font-mono">Đang đọc & phân tích tài liệu...</p>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2 py-0.5">
-              <div className="p-2 rounded-xl bg-blue-600 text-white shadow-xs group-hover:scale-105 transition-transform">
-                <UploadCloud className="w-4 h-4" />
+            <div className="flex flex-col items-center gap-2 py-1">
+              <div className="p-2.5 rounded-xl bg-[#0f172a] text-white shadow-xs group-hover:scale-105 transition-transform">
+                <UploadCloud className="w-4.5 h-4.5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                <p className="text-xs font-bold text-slate-900 group-hover:text-[#0f172a] transition-colors">
                   Kéo thả hoặc Nhấp để Upload file
                 </p>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Max 25MB • Tự động trích xuất điều khoản
+                  Tối đa 25MB • Tự động trích xuất điều khoản
                 </p>
               </div>
             </div>
@@ -265,24 +257,24 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
           <div className={`flex items-center gap-2 text-xs p-2.5 rounded-xl font-mono text-[11px] ${
             statusMessage.isError 
               ? 'bg-rose-50 text-rose-700 border border-rose-200' 
-              : 'bg-blue-50 text-blue-700 border border-blue-200'
+              : 'bg-blue-50 text-blue-800 border border-blue-200'
           }`}>
-            {statusMessage.isError ? <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" /> : <FileText className="w-4 h-4 shrink-0 text-blue-600" />}
+            {statusMessage.isError ? <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" /> : <FileText className="w-4 h-4 shrink-0 text-blue-700" />}
             <span className="truncate">{statusMessage.text}</span>
           </div>
         )}
       </div>
 
       {/* Document List & Scope Selection */}
-      <div className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col gap-2.5">
+      <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-            <FileText className="w-4 h-4 text-blue-600" />
+          <div className="flex items-center gap-2 text-xs font-bold text-[#0f172a]">
+            <FileText className="w-4 h-4 text-[#0f172a]" />
             <span>Kho Tài Liệu ({documents.length})</span>
           </div>
           <button
             onClick={fetchDocuments}
-            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer border border-slate-200"
+            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer border border-slate-200"
             title="Làm mới danh sách"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
@@ -293,10 +285,10 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
           {/* All documents option */}
           <button
             onClick={() => onSelectDoc(undefined)}
-            className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center justify-between cursor-pointer border ${
+            className={`w-full text-left p-3 rounded-xl text-xs transition-all flex items-center justify-between cursor-pointer border ${
               !selectedDocId
-                ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-semibold'
-                : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
+                ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-xs font-semibold'
+                : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -315,39 +307,39 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
               <div
                 key={doc.doc_id}
                 onClick={() => onSelectDoc(doc.doc_id)}
-                className={`w-full p-2.5 rounded-xl text-xs transition-all flex flex-col gap-1.5 cursor-pointer border ${
+                className={`w-full p-3 rounded-xl text-xs transition-all flex flex-col gap-2 cursor-pointer border ${
                   isSelected
-                    ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-semibold'
-                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'
+                    ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-xs'
+                    : 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100 hover:border-slate-300'
                 }`}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 truncate">
-                    <span className="font-semibold truncate">{doc.file_name}</span>
+                <div className="flex items-center justify-between gap-2 min-w-0">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                    <span className={`font-semibold truncate ${isSelected ? 'text-white' : 'text-slate-900'}`}>{doc.file_name}</span>
                     {doc.version && (
-                      <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded ${
+                      <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded shrink-0 ${
                         isSelected 
                           ? 'bg-white/20 text-white' 
-                          : 'bg-blue-100 text-blue-700 border border-blue-200'
+                          : 'bg-slate-200 text-slate-800 border border-slate-300'
                       }`}>
                         {doc.version}
                       </span>
                     )}
                   </div>
-                  {renderStatusBadge(doc.processing_status)}
+                  {renderStatusBadge(doc.processing_status, isSelected)}
                 </div>
 
-                <div className={`flex items-center justify-between text-[11px] ${
-                  isSelected ? 'text-blue-100' : 'text-slate-500'
+                <div className={`flex items-center justify-between text-[11px] pt-1 border-t ${
+                  isSelected ? 'border-slate-700 text-slate-300' : 'border-slate-200 text-slate-500'
                 }`}>
                   <span>{doc.total_pages || 1} trang • {doc.total_chunks || 0} chunks</span>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     {/* Version upload trigger button */}
                     <label 
                       onClick={(e) => e.stopPropagation()} 
                       className={`hover:underline cursor-pointer p-0.5 rounded font-medium text-[10px] ${
-                        isSelected ? 'text-white' : 'text-blue-600 hover:text-blue-700'
+                        isSelected ? 'text-slate-200 hover:text-white' : 'text-slate-700 hover:text-slate-900'
                       }`}
                       title="Cập nhật phiên bản mới (v2/v3)"
                     >
@@ -365,7 +357,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                       onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
                       disabled={isDeleting}
                       className={`p-1 rounded transition-colors cursor-pointer ${
-                        isSelected ? 'hover:bg-blue-700 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
+                        isSelected ? 'hover:bg-slate-800 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
                       }`}
                       title="Xóa tài liệu này"
                     >

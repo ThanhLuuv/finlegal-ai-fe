@@ -129,7 +129,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                   {/* Response Content */}
                   {msg.content ? (
                     <div className="space-y-3">
-                      <div className="prose prose-slate prose-xs max-w-none prose-p:leading-relaxed text-slate-800">
+                      <div className={`prose prose-xs max-w-none prose-p:leading-relaxed ${
+                        msg.sender === 'user' 
+                          ? 'prose-invert text-white font-medium' 
+                          : 'prose-slate text-slate-800'
+                      }`}>
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
 

@@ -73,6 +73,28 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     return () => clearTimeout(timer);
   }, [documents, fetchDocuments]);
 
+  const [isSeeding, setIsSeeding] = useState(false);
+
+  const handleSeedSampleDoc = async () => {
+    try {
+      setIsSeeding(true);
+      const res = await fetch(`${backendUrl}/api/documents/seed-sample`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        await fetchDocuments();
+        if (data.docId) onSelectDoc(data.docId);
+      } else {
+        alert(data.error || 'Khởi tạo tài liệu mẫu thất bại');
+      }
+    } catch {
+      alert('Không thể kết nối máy chủ để nạp tài liệu mẫu.');
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, targetDocIdForVersion?: string) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -274,13 +296,24 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             <FileText className="w-4 h-4 text-[#0f172a]" />
             <span>Kho Tài Liệu ({documents.length})</span>
           </div>
-          <button
-            onClick={fetchDocuments}
-            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer border border-slate-200"
-            title="Làm mới danh sách"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={handleSeedSampleDoc}
+              disabled={isSeeding}
+              className="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-bold transition-all flex items-center gap-1 border border-emerald-200 cursor-pointer shadow-2xs"
+              title="Nạp lại tài liệu hợp đồng mẫu dùng thử"
+            >
+              {isSeeding ? <Loader2 className="w-3 h-3 animate-spin text-emerald-600" /> : <Sparkles className="w-3 h-3 text-emerald-600" />}
+              <span>Nạp file mẫu</span>
+            </button>
+            <button
+              onClick={fetchDocuments}
+              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer border border-slate-200"
+              title="Làm mới danh sách"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
 
         <div className="space-y-2 max-h-64 overflow-y-auto pr-1">

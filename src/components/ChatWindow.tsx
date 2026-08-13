@@ -110,9 +110,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
               <div className={`max-w-3xl ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
                 <div
-                  className={`p-4 rounded-2xl text-xs leading-relaxed shadow-2xs ${
+                  className={`p-4 rounded-2xl text-xs leading-relaxed shadow-xs ${
                     msg.sender === 'user'
-                      ? 'bg-[#0f172a] text-white rounded-tr-none font-medium shadow-2xs'
+                      ? 'bg-blue-600 text-white rounded-tr-none font-medium shadow-xs'
                       : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/90 shadow-2xs'
                   }`}
                 >
@@ -168,7 +168,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               </div>
 
               {msg.sender === 'user' && (
-                <div className="w-8 h-8 rounded-xl bg-slate-700 text-white flex items-center justify-center shrink-0 shadow-2xs mt-1">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs mt-1">
                   <User className="w-4 h-4" />
                 </div>
               )}
@@ -180,7 +180,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
       {/* Input Form */}
       <form onSubmit={handleSubmit} className="p-3.5 border-t border-slate-100 bg-white space-y-2">
-        <div className="flex items-center gap-2 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#0f172a]/30 rounded-xl p-2 transition-all border border-slate-200">
+        <div className="flex items-center gap-2 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/30 rounded-xl p-2 transition-all border border-slate-200">
           <input
             type="text"
             value={inputPrompt}
@@ -192,7 +192,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           <button
             type="submit"
             disabled={!inputPrompt.trim() || isStreaming}
-            className="px-4 py-2 rounded-lg bg-[#0f172a] hover:bg-[#1e293b] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <span>Gửi</span>
             {isStreaming ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}

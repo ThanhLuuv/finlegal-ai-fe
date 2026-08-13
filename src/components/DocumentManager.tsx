@@ -158,10 +158,10 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     switch (status) {
       case 'READY':
         return (
-          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
             isSelected 
-              ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60' 
-              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              ? 'bg-emerald-950/80 text-emerald-300' 
+              : 'bg-emerald-50 text-emerald-700'
           }`}>
             <CheckCircle2 className="w-3 h-3 shrink-0" /> Sẵn sàng
           </span>
@@ -169,10 +169,10 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
       case 'EXTRACTING':
       case 'PARSING':
         return (
-          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold border animate-pulse ${
+          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2.5 py-0.5 rounded-full text-[10px] font-semibold animate-pulse ${
             isSelected
-              ? 'bg-blue-950/80 text-blue-300 border-blue-700/60'
-              : 'bg-blue-50 text-blue-700 border-blue-200'
+              ? 'bg-blue-950/80 text-blue-300'
+              : 'bg-blue-50 text-blue-700'
           }`}>
             <Loader2 className="w-3 h-3 animate-spin shrink-0" /> Trích xuất
           </span>
@@ -181,27 +181,27 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
       case 'EMBEDDING':
       case 'INDEXING':
         return (
-          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold border animate-pulse ${
+          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2.5 py-0.5 rounded-full text-[10px] font-semibold animate-pulse ${
             isSelected
-              ? 'bg-amber-950/80 text-amber-300 border-amber-700/60'
-              : 'bg-amber-50 text-amber-700 border-amber-200'
+              ? 'bg-amber-950/80 text-amber-300'
+              : 'bg-amber-50 text-amber-700'
           }`}>
             <Loader2 className="w-3 h-3 animate-spin shrink-0" /> Đang xử lý
           </span>
         );
       case 'FAILED':
         return (
-          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+          <span className={`inline-flex items-center gap-1 shrink-0 min-w-max px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
             isSelected
-              ? 'bg-rose-950/80 text-rose-300 border-rose-700/60'
-              : 'bg-rose-50 text-rose-700 border-rose-200'
+              ? 'bg-rose-950/80 text-rose-300'
+              : 'bg-rose-50 text-rose-700'
           }`}>
             <AlertCircle className="w-3 h-3 shrink-0" /> Lỗi xử lý
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 shrink-0 min-w-max px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">
+          <span className="inline-flex items-center gap-1 shrink-0 min-w-max px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500">
             <Loader2 className="w-3 h-3 animate-spin shrink-0" /> Đang tải...
           </span>
         );
@@ -217,12 +217,12 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             <Sparkles className="w-4 h-4 text-[#0f172a]" />
             <span>Tải Lên Tài Liệu</span>
           </div>
-          <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
             PDF, TXT, CSV
           </span>
         </div>
 
-        <div className="relative group flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-[#0f172a] bg-slate-50/70 hover:bg-slate-100/60 transition-all cursor-pointer text-center">
+        <div className="relative group flex flex-col items-center justify-center p-4 rounded-xl border border-dashed border-slate-200 hover:border-[#0f172a] bg-slate-50/70 hover:bg-slate-100/60 transition-all cursor-pointer text-center">
           <input
             type="file"
             accept=".pdf,.txt,.csv"
@@ -254,12 +254,12 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
         </div>
 
         {statusMessage && (
-          <div className={`flex items-center gap-2 text-xs p-2.5 rounded-xl font-mono text-[11px] ${
+          <div className={`flex items-center gap-2 text-xs p-2.5 rounded-xl text-[11px] ${
             statusMessage.isError 
-              ? 'bg-rose-50 text-rose-700 border border-rose-200' 
-              : 'bg-blue-50 text-blue-800 border border-blue-200'
+              ? 'bg-rose-50 text-rose-700' 
+              : 'bg-slate-100 text-slate-800'
           }`}>
-            {statusMessage.isError ? <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" /> : <FileText className="w-4 h-4 shrink-0 text-blue-700" />}
+            {statusMessage.isError ? <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" /> : <FileText className="w-4 h-4 shrink-0 text-[#0f172a]" />}
             <span className="truncate">{statusMessage.text}</span>
           </div>
         )}
@@ -320,7 +320,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                       <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded shrink-0 ${
                         isSelected 
                           ? 'bg-white/20 text-white' 
-                          : 'bg-slate-200 text-slate-800 border border-slate-300'
+                          : 'bg-slate-200 text-slate-800'
                       }`}>
                         {doc.version}
                       </span>

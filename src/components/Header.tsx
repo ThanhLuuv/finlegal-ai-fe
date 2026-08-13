@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLogs }) => {
         <div>
           <h1 className="text-sm font-bold text-[#0f172a] flex items-center gap-2 tracking-tight">
             LexiFin AI
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-[#0f172a] border border-slate-300/80">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-[#0f172a]">
               Trợ Lý Doanh Nghiệp
             </span>
           </h1>
@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLogs }) => {
         {onOpenLogs && (
           <button
             onClick={onOpenLogs}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-[#0f172a] text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-[#0f172a] text-xs font-semibold transition-all cursor-pointer shadow-2xs"
             title="Xem lịch sử suy luận & tra cứu"
           >
             <Activity className="w-3.5 h-3.5 text-emerald-600" />
@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLogs }) => {
           </button>
         )}
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-semibold">
           <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
           <span>Hệ Thống Sẵn Sàng</span>
         </div>

@@ -63,7 +63,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           <div>
             <h2 className="text-sm font-bold text-[#0f172a] flex items-center gap-2">
               Trợ Lý LexiFin AI
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-[#0f172a] border border-slate-300">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-[#0f172a]">
                 Trợ Lý Chuyên Gia
               </span>
             </h2>
@@ -72,7 +72,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
 
         {/* Selected Document Filter Scope Pill */}
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-medium border border-slate-200">
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">
           <Filter className="w-3.5 h-3.5 text-[#0f172a]" />
           <span className="truncate max-w-[200px]">
             {selectedDocName ? `Tài liệu: ${selectedDocName}` : 'Toàn bộ tài liệu'}
@@ -94,28 +94,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               <p className="text-xs text-slate-500 leading-relaxed">
                 Hệ thống tự động đọc hiểu văn bản, trích xuất chính xác các điều khoản và đưa ra câu trả lời kèm căn cứ trích dẫn rõ ràng.
               </p>
-            </div>
-
-            {/* Quick Prompt Suggestions */}
-            <div className="w-full space-y-2.5 pt-2">
-              <p className="text-[11px] font-semibold text-slate-500 flex items-center justify-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#0f172a]" />
-                <span>Câu hỏi gợi ý nhanh:</span>
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
-                {quickPrompts.map((prompt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleQuickPromptClick(prompt)}
-                    className="p-3 rounded-xl bg-white border border-slate-200 hover:border-[#0f172a] text-xs text-slate-800 hover:text-[#0f172a] transition-all text-left shadow-2xs cursor-pointer flex items-center gap-2.5 group"
-                  >
-                    <div className="p-1 rounded-lg bg-slate-100 text-[#0f172a] group-hover:bg-[#0f172a] group-hover:text-white transition-colors shrink-0">
-                      <FileText className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="truncate">{prompt}</span>
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         ) : (

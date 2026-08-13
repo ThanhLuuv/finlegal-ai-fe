@@ -12,7 +12,8 @@ import {
   AlertCircle, 
   Layers,
   Sparkles,
-  Eye
+  Eye,
+  Lock
 } from 'lucide-react';
 
 interface DocumentManagerProps {
@@ -303,6 +304,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
           {documents.map((doc) => {
             const isSelected = selectedDocId === doc.doc_id;
             const isDeleting = deletingId === doc.doc_id;
+            const isDemoDoc = Number((doc as any).is_demo) === 1 || doc.doc_id.toLowerCase().includes('demo');
 
             return (
               <div
@@ -327,14 +329,25 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                     >
                       {doc.file_name}
                     </span>
-                    {doc.version && (
-                      <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded shrink-0 ${
+                    {isDemoDoc ? (
+                      <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded shrink-0 flex items-center gap-0.5 ${
                         isSelected 
-                          ? 'bg-white/20 text-white' 
-                          : 'bg-slate-200 text-slate-800'
+                          ? 'bg-amber-500/30 text-amber-200 border border-amber-400/40' 
+                          : 'bg-amber-100 text-amber-800 border border-amber-200'
                       }`}>
-                        {doc.version}
+                        <Lock className="w-2.5 h-2.5" />
+                        <span>Mẫu</span>
                       </span>
+                    ) : (
+                      doc.version && (
+                        <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded shrink-0 ${
+                          isSelected 
+                            ? 'bg-white/20 text-white' 
+                            : 'bg-slate-200 text-slate-800'
+                        }`}>
+                          {doc.version}
+                        </span>
+                      )
                     )}
                   </div>
                   {renderStatusBadge(doc.processing_status, isSelected)}
@@ -378,17 +391,32 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                       <span>Up v2</span>
                     </label>
 
-                    {/* Delete button */}
-                    <button
-                      onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
-                      disabled={isDeleting}
-                      className={`p-1 rounded transition-colors cursor-pointer ${
-                        isSelected ? 'hover:bg-slate-800 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
-                      }`}
-                      title="Xóa tài liệu này"
-                    >
-                      {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" /> : <Trash2 className="w-3.5 h-3.5" />}
-                    </button>
+                    {/* Delete / Protected Lock Button */}
+                    {isDemoDoc ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          alert('Đây là tài liệu mẫu hệ thống dành cho Nhà tuyển dụng dùng thử (Không thể xóa).');
+                        }}
+                        className={`p-1 rounded cursor-not-allowed opacity-75 ${
+                          isSelected ? 'text-amber-300 hover:bg-slate-800' : 'text-amber-600 hover:bg-amber-50'
+                        }`}
+                        title="Tài liệu mẫu hệ thống dành cho Nhà tuyển dụng dùng thử (Không thể xóa)"
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
+                        disabled={isDeleting}
+                        className={`p-1 rounded transition-colors cursor-pointer ${
+                          isSelected ? 'hover:bg-slate-800 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
+                        }`}
+                        title="Xóa tài liệu này"
+                      >
+                        {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

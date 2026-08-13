@@ -391,32 +391,17 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                       <span>Up v2</span>
                     </label>
 
-                    {/* Delete / Protected Lock Button */}
-                    {isDemoDoc ? (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          alert('Đây là tài liệu mẫu hệ thống dành cho Nhà tuyển dụng dùng thử (Không thể xóa).');
-                        }}
-                        className={`p-1 rounded cursor-not-allowed opacity-75 ${
-                          isSelected ? 'text-amber-300 hover:bg-slate-800' : 'text-amber-600 hover:bg-amber-50'
-                        }`}
-                        title="Tài liệu mẫu hệ thống dành cho Nhà tuyển dụng dùng thử (Không thể xóa)"
-                      >
-                        <Lock className="w-3.5 h-3.5" />
-                      </button>
-                    ) : (
-                      <button
-                        onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
-                        disabled={isDeleting}
-                        className={`p-1 rounded transition-colors cursor-pointer ${
-                          isSelected ? 'hover:bg-slate-800 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
-                        }`}
-                        title="Xóa tài liệu này"
-                      >
-                        {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" /> : <Trash2 className="w-3.5 h-3.5" />}
-                      </button>
-                    )}
+                    {/* Delete Button */}
+                    <button
+                      onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
+                      disabled={isDeleting}
+                      className={`p-1 rounded transition-colors cursor-pointer ${
+                        isSelected ? 'hover:bg-slate-800 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
+                      }`}
+                      title="Xóa tài liệu này"
+                    >
+                      {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" /> : <Trash2 className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                 </div>
               </div>

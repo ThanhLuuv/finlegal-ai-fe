@@ -112,7 +112,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 <div
                   className={`p-4 rounded-2xl text-xs leading-relaxed shadow-xs ${
                     msg.sender === 'user'
-                      ? 'bg-blue-600 text-white rounded-tr-none font-medium shadow-xs'
+                      ? 'bg-blue-600 !text-white rounded-tr-none font-medium shadow-md'
                       : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/90 shadow-2xs'
                   }`}
                 >
@@ -131,7 +131,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                     <div className="space-y-3">
                       <div className={`prose prose-xs max-w-none prose-p:leading-relaxed ${
                         msg.sender === 'user' 
-                          ? 'prose-invert text-white font-medium' 
+                          ? 'prose-invert !text-white prose-p:!text-white prose-headings:!text-white font-medium' 
                           : 'prose-slate text-slate-800'
                       }`}>
                         <ReactMarkdown>{msg.content}</ReactMarkdown>

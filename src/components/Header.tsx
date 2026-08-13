@@ -11,8 +11,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLogs }) => {
   return (
     <header className="h-16 border-b border-slate-200/80 bg-white/90 backdrop-blur-md px-5 flex items-center justify-between shrink-0 shadow-2xs">
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm border border-blue-500/20 font-extrabold text-sm">
-          FL
+        <div className="flex items-center">
+          <img
+            src="/logo.png"
+            alt="FinLegal AI Logo"
+            className="h-9 w-auto object-contain rounded-lg shadow-2xs"
+            onError={(e) => {
+              // Fallback to icon.png if logo.png is missing or fails
+              (e.currentTarget as HTMLImageElement).src = '/icon.png';
+            }}
+          />
         </div>
         <div>
           <h1 className="text-sm font-bold text-slate-900 flex items-center gap-2 tracking-tight">

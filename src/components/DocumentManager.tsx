@@ -205,18 +205,18 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
   return (
     <div className="flex flex-col gap-3">
       {/* Upload Zone */}
-      <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-md space-y-3 backdrop-blur-sm">
+      <div className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold text-white">
-            <Sparkles className="w-4 h-4 text-blue-400" />
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+            <Sparkles className="w-4 h-4 text-blue-600" />
             <span>Tải Lên Tài Liệu</span>
           </div>
-          <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 border border-slate-700/80 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
             PDF, TXT, CSV
           </span>
         </div>
 
-        <div className="relative group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-xl border-2 border-dashed border-slate-800 hover:border-blue-500/50 bg-slate-950/60 hover:bg-slate-950 transition-all cursor-pointer text-center">
+        <div className="relative group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-500 bg-slate-50/70 hover:bg-blue-50/40 transition-all cursor-pointer text-center">
           <input
             type="file"
             accept=".pdf,.txt,.csv"
@@ -227,19 +227,19 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
 
           {isUploading ? (
             <div className="flex flex-col items-center gap-2 py-1.5">
-              <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
-              <p className="text-xs font-medium text-slate-300 font-mono">Đang đọc & phân tích tài liệu...</p>
+              <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+              <p className="text-xs font-medium text-slate-600 font-mono">Đang đọc & phân tích tài liệu...</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 py-0.5">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md border border-blue-400/20 group-hover:scale-105 transition-transform">
+              <div className="p-2 rounded-xl bg-blue-600 text-white shadow-xs group-hover:scale-105 transition-transform">
                 <UploadCloud className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
+                <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
                   Kéo thả hoặc Nhấp để Upload file
                 </p>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="text-[11px] text-slate-500 mt-0.5">
                   Max 25MB • Tự động trích xuất điều khoản
                 </p>
               </div>
@@ -250,25 +250,25 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
         {statusMessage && (
           <div className={`flex items-center gap-2 text-xs p-2.5 rounded-xl font-mono text-[11px] ${
             statusMessage.isError 
-              ? 'bg-rose-500/10 text-rose-300 border border-rose-500/20' 
-              : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+              ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+              : 'bg-blue-50 text-blue-700 border border-blue-200'
           }`}>
-            {statusMessage.isError ? <AlertCircle className="w-4 h-4 shrink-0" /> : <FileText className="w-4 h-4 shrink-0" />}
+            {statusMessage.isError ? <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" /> : <FileText className="w-4 h-4 shrink-0 text-blue-600" />}
             <span className="truncate">{statusMessage.text}</span>
           </div>
         )}
       </div>
 
       {/* Document List & Scope Selection */}
-      <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-md flex flex-col gap-2.5 backdrop-blur-sm">
+      <div className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold text-white">
-            <FileText className="w-4 h-4 text-blue-400" />
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+            <FileText className="w-4 h-4 text-blue-600" />
             <span>Kho Tài Liệu ({documents.length})</span>
           </div>
           <button
             onClick={fetchDocuments}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer border border-slate-700/60"
+            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer border border-slate-200"
             title="Làm mới danh sách"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
@@ -281,8 +281,8 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             onClick={() => onSelectDoc(undefined)}
             className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center justify-between cursor-pointer border ${
               !selectedDocId
-                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-500/30 shadow-md font-semibold'
-                : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:bg-slate-900 hover:border-slate-700'
+                ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-semibold'
+                : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -303,8 +303,8 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                 onClick={() => onSelectDoc(doc.doc_id)}
                 className={`w-full p-2.5 rounded-xl text-xs transition-all flex flex-col gap-1.5 cursor-pointer border ${
                   isSelected
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-500/30 shadow-md font-semibold'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:bg-slate-900 hover:border-slate-700'
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-semibold'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -314,7 +314,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                       <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded ${
                         isSelected 
                           ? 'bg-white/20 text-white' 
-                          : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                          : 'bg-blue-100 text-blue-700 border border-blue-200'
                       }`}>
                         {doc.version}
                       </span>
@@ -324,7 +324,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                 </div>
 
                 <div className={`flex items-center justify-between text-[11px] ${
-                  isSelected ? 'text-blue-100' : 'text-slate-400'
+                  isSelected ? 'text-blue-100' : 'text-slate-500'
                 }`}>
                   <span>{doc.total_pages || 1} trang • {doc.total_chunks || 0} chunks</span>
 
@@ -333,7 +333,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                     <label 
                       onClick={(e) => e.stopPropagation()} 
                       className={`hover:underline cursor-pointer p-0.5 rounded font-medium text-[10px] ${
-                        isSelected ? 'text-white' : 'text-blue-400 hover:text-blue-300'
+                        isSelected ? 'text-white' : 'text-blue-600 hover:text-blue-700'
                       }`}
                       title="Cập nhật phiên bản mới (v2/v3)"
                     >
@@ -350,10 +350,12 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                     <button
                       onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
                       disabled={isDeleting}
-                      className="p-1 rounded hover:bg-rose-600 hover:text-white transition-colors cursor-pointer text-slate-400 hover:text-white"
+                      className={`p-1 rounded transition-colors cursor-pointer ${
+                        isSelected ? 'hover:bg-blue-700 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
+                      }`}
                       title="Xóa tài liệu này"
                     >
-                      {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" /> : <Trash2 className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>

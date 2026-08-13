@@ -62,11 +62,11 @@ export const ThoughtProcess: React.FC<ThoughtProcessProps> = ({ thoughts, isStre
                     {new Date(t.timestamp).toLocaleTimeString()}
                   </span>
                 </div>
-                <p className="text-slate-700 leading-relaxed text-[11px] pl-0.5">
+                <p className="text-slate-700 leading-relaxed text-[11px] pl-0.5 break-words">
                   {t.thought}
                 </p>
                 {t.data !== undefined && t.data !== null && (
-                  <pre className="mt-1 p-2 rounded bg-slate-900 text-[10px] text-slate-100 font-mono overflow-x-auto max-h-32">
+                  <pre className="mt-1 p-2 rounded bg-slate-900 text-[10px] text-slate-100 font-mono overflow-x-auto max-h-32 max-w-full whitespace-pre-wrap break-all">
                     {JSON.stringify(t.data, null, 2)}
                   </pre>
                 )}

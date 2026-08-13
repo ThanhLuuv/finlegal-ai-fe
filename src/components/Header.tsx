@@ -34,9 +34,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLogs, onToggleMobileSideba
           />
         </div>
         <div>
-          <h1 className="text-xs sm:text-sm font-bold text-[#0f172a] flex items-center gap-1.5 sm:gap-2 tracking-tight">
+          <h1 className="text-xs sm:text-sm font-bold text-[#0f172a] flex items-center gap-1.5 sm:gap-2 tracking-tight whitespace-nowrap">
             LexiFin AI
-            <span className="text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-md bg-slate-100 text-[#0f172a]">
+            <span className="hidden sm:inline-block text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-md bg-slate-100 text-[#0f172a]">
               Trợ Lý Doanh Nghiệp
             </span>
           </h1>

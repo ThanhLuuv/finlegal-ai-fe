@@ -316,7 +316,17 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
               >
                 <div className="flex items-center justify-between gap-2 min-w-0">
                   <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                    <span className={`font-semibold truncate ${isSelected ? 'text-white' : 'text-slate-900'}`}>{doc.file_name}</span>
+                    <span 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectDoc(doc.doc_id);
+                        window.open(`${backendUrl}/api/documents/${doc.doc_id}/view`, '_blank');
+                      }}
+                      className={`font-semibold truncate hover:underline cursor-pointer ${isSelected ? 'text-white' : 'text-slate-900'}`}
+                      title="Nhấp để chọn & mở xem file gốc"
+                    >
+                      {doc.file_name}
+                    </span>
                     {doc.version && (
                       <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded shrink-0 ${
                         isSelected 
@@ -342,12 +352,13 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                         e.stopPropagation();
                         window.open(`${backendUrl}/api/documents/${doc.doc_id}/view`, '_blank');
                       }}
-                      className={`p-1 rounded transition-colors cursor-pointer ${
-                        isSelected ? 'hover:bg-slate-800 text-slate-200' : 'hover:bg-slate-200 text-slate-600'
+                      className={`flex items-center gap-1 px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
+                        isSelected ? 'hover:bg-slate-800 text-slate-200 bg-white/10' : 'hover:bg-slate-200 text-slate-700 bg-slate-100'
                       }`}
-                      title="Xem trước file gốc"
+                      title="Xem file gốc trong tab mới"
                     >
                       <Eye className="w-3.5 h-3.5" />
+                      <span className="text-[10px] font-semibold">Xem file</span>
                     </button>
 
                     {/* Version upload trigger button */}

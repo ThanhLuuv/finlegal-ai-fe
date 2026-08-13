@@ -34,7 +34,12 @@ export interface ChatMessage {
 export interface DocumentRecord {
   doc_id: string;
   file_name: string;
+  user_id?: string;
+  version?: string;
+  is_active?: number;
   total_pages: number;
   total_chunks: number;
+  processing_status?: string;
   created_at: string;
 }
+

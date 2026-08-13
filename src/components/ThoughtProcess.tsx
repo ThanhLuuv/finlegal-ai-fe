@@ -41,7 +41,8 @@ export const ThoughtProcess: React.FC<ThoughtProcessProps> = ({ thoughts, isStre
           ) : (
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
           )}
-          <span>Các bước suy luận & phân tích ({thoughts.length} bước)</span>
+          <span>Retrieval Trace & Processing Steps ({thoughts.length} bước)</span>
+
         </div>
         {isOpen ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
       </button>

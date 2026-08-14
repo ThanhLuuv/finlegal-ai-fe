@@ -424,17 +424,19 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                       <span>Up v2</span>
                     </label>
 
-                    {/* Delete Button */}
-                    <button
-                      onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
-                      disabled={isDeleting}
-                      className={`p-1 rounded transition-colors cursor-pointer ${
-                        isSelected ? 'hover:bg-slate-800 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
-                      }`}
-                      title="Xóa tài liệu này"
-                    >
-                      {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" /> : <Trash2 className="w-3.5 h-3.5" />}
-                    </button>
+                    {/* Delete Button (Protected for demo sample documents) */}
+                    {!isDemoDoc && (
+                      <button
+                        onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
+                        disabled={isDeleting}
+                        className={`p-1 rounded transition-colors cursor-pointer ${
+                          isSelected ? 'hover:bg-slate-800 text-white' : 'hover:bg-rose-100 hover:text-rose-600 text-slate-400'
+                        }`}
+                        title="Xóa tài liệu này"
+                      >
+                        {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -186,7 +186,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       {/* Bottom Input Box - Compact Inline Input Bar */}
-      <form onSubmit={handleSubmit} className="bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl p-1.5 pl-4 flex items-center gap-2 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all shadow-2xs">
+      <form onSubmit={handleSubmit} className="bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl p-2 pl-4 flex items-center gap-2 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all shadow-2xs">
         <textarea
           value={inputPrompt}
           onChange={(e) => setInputPrompt(e.target.value)}
@@ -205,9 +205,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         <button
           type="submit"
           disabled={!inputPrompt.trim() || isStreaming}
-          className="w-8.5 h-8.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-sm shrink-0 transition-all cursor-pointer active:scale-95"
+          className="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-sm shrink-0 transition-all cursor-pointer active:scale-95"
         >
-          {isStreaming ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+          {isStreaming ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
         </button>
       </form>
 

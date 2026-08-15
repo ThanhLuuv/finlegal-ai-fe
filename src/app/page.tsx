@@ -95,9 +95,9 @@ export default function HomePage() {
           />
 
           {/* Executive Feature Guide Box */}
-          <div className="mt-auto p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-3 text-xs text-slate-700">
+          <div className="mt-auto p-4 rounded-2xl bg-white shadow-sm space-y-3 text-xs text-slate-700">
             <div className="flex items-center gap-2 text-[#0f172a] font-bold">
-              <div className="p-1 rounded-lg bg-slate-100 text-[#0f172a] border border-slate-200">
+              <div className="p-1 rounded-lg bg-slate-100 text-[#0f172a]">
                 <HelpCircle className="w-4 h-4" />
               </div>
               <span>Tính Năng Nổi Bật</span>

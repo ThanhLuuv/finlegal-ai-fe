@@ -233,7 +233,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white shadow-sm rounded-2xl p-5 relative overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-2xl p-5 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.07)] border border-slate-100/80 relative overflow-hidden">
       {/* Hidden File Input for Header Trigger */}
       <input
         type="file"

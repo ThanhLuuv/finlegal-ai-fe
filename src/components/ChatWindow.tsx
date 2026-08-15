@@ -46,7 +46,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white shadow-sm rounded-2xl p-5 relative overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-2xl p-5 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.07)] border border-slate-100/80 relative overflow-hidden">
       {/* Workspace Section Header Title - Matching Template: Trò chuyện với tài liệu */}
       <h2 className="text-lg font-bold text-slate-800 tracking-tight mb-3">Trò chuyện với tài liệu</h2>
 
@@ -185,8 +185,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Bottom Input Box - Matching Template Input Box Layout */}
-      <form onSubmit={handleSubmit} className="relative bg-white border border-slate-200 rounded-2xl p-3 shadow-xs">
+      {/* Bottom Input Box - Compact Inline Input Bar */}
+      <form onSubmit={handleSubmit} className="bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl p-1.5 pl-4 flex items-center gap-2 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all shadow-2xs">
         <textarea
           value={inputPrompt}
           onChange={(e) => setInputPrompt(e.target.value)}
@@ -198,20 +198,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           }}
           placeholder="Nhập câu hỏi của bạn..."
           disabled={isStreaming}
-          rows={2}
-          className="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 focus:outline-none resize-none font-normal"
+          rows={1}
+          className="flex-1 bg-transparent text-sm text-slate-800 placeholder-slate-400 focus:outline-none resize-none py-1.5 font-normal max-h-20"
         />
 
-        <div className="flex items-center justify-end pt-2 border-t border-slate-100/60">
-          {/* Send Blue Button */}
-          <button
-            type="submit"
-            disabled={!inputPrompt.trim() || isStreaming}
-            className="w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md transition-all cursor-pointer active:scale-95"
-          >
-            {isStreaming ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={!inputPrompt.trim() || isStreaming}
+          className="w-8.5 h-8.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-sm shrink-0 transition-all cursor-pointer active:scale-95"
+        >
+          {isStreaming ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+        </button>
       </form>
 
       {/* Footer Disclaimer Note - Matching Template Footer */}

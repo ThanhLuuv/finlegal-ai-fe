@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSSE } from '../hooks/useSSE';
-import { Header } from '../components/Header';
 import { SecurityGate } from '../components/SecurityGate';
 import { TerminalAppConsole } from '../components/TerminalAppConsole';
 import { TerminalConsoleModal } from '../components/TerminalConsoleModal';
@@ -64,15 +63,9 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
-      {/* Top Header */}
-      <Header 
-        onOpenLogs={() => setIsTerminalModalOpen(true)} 
-        onUploadClick={() => uploadInputRef.current?.click()}
-      />
-
-      {/* Main Single Terminal Workspace Screen */}
-      <div className="flex-1 p-3 sm:p-5 bg-[#f8fafc] overflow-hidden flex flex-col">
+    <div className="flex flex-col h-screen w-screen max-h-screen overflow-hidden bg-[#050811] text-slate-100 font-mono p-1 sm:p-3 selection:bg-cyan-600 selection:text-white">
+      {/* 100% Full-Screen Terminal App Console */}
+      <div className="flex-1 overflow-hidden flex flex-col">
         <TerminalAppConsole
           backendUrl={backendUrl}
           messages={messages}
@@ -83,7 +76,7 @@ export default function HomePage() {
         />
       </div>
 
-      {/* Full Developer Terminal Logs Modal */}
+      {/* Developer System Logs Modal */}
       <TerminalConsoleModal
         isOpen={isTerminalModalOpen}
         onClose={() => setIsTerminalModalOpen(false)}

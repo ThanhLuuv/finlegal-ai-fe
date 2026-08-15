@@ -320,11 +320,27 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
     }, 800);
   };
 
+  const handleClearLogs = () => {
+    setTerminalLogs([
+      {
+        id: `log_cleared_${Date.now()}`,
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'SYSTEM',
+        text: 'Terminal logs cleared. Console output reset.'
+      }
+    ]);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputPrompt.trim() || isStreaming) return;
-    const prompt = inputPrompt;
+    const prompt = inputPrompt.trim();
     setInputPrompt('');
+
+    if (prompt.toLowerCase() === 'clear' || prompt.toLowerCase() === 'cls') {
+      handleClearLogs();
+      return;
+    }
 
     addTerminalLog('CMD', `./query_engine --prompt "${prompt}" ${selectedDocId ? `--target_doc "${selectedDocId}"` : '--scope ALL'}`);
     onSendMessage(prompt, selectedDocId);
@@ -435,6 +451,14 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
             title="Sao chép log"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+          </button>
+
+          <button
+            onClick={handleClearLogs}
+            className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-rose-300 hover:text-rose-200 transition-colors cursor-pointer"
+            title="Xóa sạch log Terminal (gõ 'clear' hoặc 'cls')"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

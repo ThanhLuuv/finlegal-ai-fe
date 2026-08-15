@@ -2,21 +2,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { 
-  Terminal as TerminalIcon, 
-  Upload, 
-  Send, 
-  Loader2, 
-  CheckCircle2, 
-  AlertCircle, 
-  Layers, 
-  FileText, 
-  Trash2, 
+import {
+  Terminal as TerminalIcon,
+  Upload,
+  Send,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Layers,
+  FileText,
+  Trash2,
   Eye,
   FolderOpen,
   X,
-  Copy, 
-  Check 
+  Copy,
+  Check
 } from 'lucide-react';
 import { ChatMessage, DocumentRecord, AgentThoughtStep } from '../types';
 
@@ -59,7 +59,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
       id: 'log_0',
       timestamp: new Date().toLocaleTimeString(),
       type: 'SYSTEM',
-      text: 'FinLegal Enterprise Engine v4.0 (Cloudflare Edge Worker + DeepSeek-v4-Flash) Online.'
+      text: 'FinLegal Enterprise Engine v4.0 Online.'
     },
     {
       id: 'log_1',
@@ -109,7 +109,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
         const data = await res.json() as { documents: DocumentRecord[] };
         setDocuments(data.documents || []);
       }
-    } catch {}
+    } catch { }
   };
 
   useEffect(() => {
@@ -234,7 +234,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
         const docId = data.docId;
         setSelectedDocId(docId);
         addTerminalLog('SUCCESS', `[2/5 STATE] Initialized D1 database record (docId: ${docId})`);
-        
+
         // Start Live Polling Ingestion Status
         startStatusPolling(docId, file.name);
       } else {
@@ -299,7 +299,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
             setTimeout(() => setActiveIngestion(null), 5000);
           }
         }
-      } catch {}
+      } catch { }
     }, 800);
   };
 
@@ -324,7 +324,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#070b14] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden font-mono text-xs text-slate-100">
-      
+
       {/* Hidden File Input */}
       <input
         type="file"
@@ -424,7 +424,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
 
       {/* Main Terminal Output Console Stream Screen */}
       <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#04060c] font-mono leading-relaxed">
-        
+
         {/* Active Ingestion Live Progress ASCII Card */}
         {activeIngestion && (
           <div className="p-3.5 rounded-xl border border-cyan-800/80 bg-[#090e1c] text-cyan-300 space-y-2 shadow-xl">
@@ -432,7 +432,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
               <span>INGESTION PIPELINE // {activeIngestion.fileName}</span>
               <span className="text-emerald-400">{activeIngestion.status}... {activeIngestion.progress}%</span>
             </div>
-            
+
             {/* ASCII Progress Bar */}
             <div className="p-1.5 rounded bg-[#020408] border border-slate-800 text-[11px] text-cyan-400 tracking-wider">
               [{'='.repeat(Math.max(0, Math.round((activeIngestion.progress / 100) * 20) - 1))}&gt;
@@ -445,7 +445,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
         {terminalLogs.map((log) => (
           <div key={log.id} className="flex items-start gap-2">
             <span className="text-slate-500 text-[10.5px] shrink-0 pt-0.5 select-none">[{log.timestamp}]</span>
-            
+
             {log.type === 'CMD' && (
               <div className="text-cyan-400 font-bold flex items-start gap-1.5">
                 <span className="text-emerald-400 select-none">$</span>

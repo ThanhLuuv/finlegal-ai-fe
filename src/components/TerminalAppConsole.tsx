@@ -121,7 +121,8 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
   useEffect(() => {
     if (activeThoughts && activeThoughts.length > 0) {
       const t = activeThoughts[activeThoughts.length - 1];
-      addTerminalLog('PROGRESS', `[${t.agent}] ${t.thought}`, t.data);
+      addTerminalLog('CMD', `./agent_step --agent "${t.agent}" --status "${t.status}"`);
+      addTerminalLog('PROGRESS', `  └─ [${t.agent}] ${t.thought}`);
     }
   }, [activeThoughts]);
 
@@ -525,9 +526,28 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
                   </div>
                 ) : (
                   msg.isStreaming && (
-                    <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs">
-                      <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
-                      <span>Đang bóc tách và tổng hợp câu trả lời...</span>
+                    <div className="space-y-2 font-mono text-xs">
+                      <div className="flex items-center gap-2 text-cyan-400 font-bold">
+                        <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                        <span>[EXECUTION TRACE] Đang thực thi quy trình RAG & Tổng hợp DeepSeek-v4...</span>
+                      </div>
+
+                      {msg.thoughtProcess && msg.thoughtProcess.length > 0 ? (
+                        <div className="space-y-1.5 p-3 rounded-xl bg-[#03050a] border border-slate-800 text-[11px]">
+                          {msg.thoughtProcess.map((tp, idx) => (
+                            <div key={idx} className="flex items-start gap-1.5 leading-snug">
+                              <span className="text-emerald-400 font-bold select-none">$</span>
+                              <span className="text-cyan-300 font-bold">[{tp.agent}]</span>
+                              <span className="text-slate-200">{tp.thought}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-2.5 rounded-xl bg-[#03050a] border border-slate-800 text-[11px] text-slate-400">
+                          <span className="text-emerald-400 font-bold">$ </span>
+                          <span>./supervisor --route --intent RAG_ONLY --model deepseek-v4-flash</span>
+                        </div>
+                      )}
                     </div>
                   )
                 )}

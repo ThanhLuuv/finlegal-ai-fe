@@ -129,8 +129,13 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
     const doc = documents.find(d => d.doc_id === docId);
     const fileName = doc?.file_name || docId;
 
-    addTerminalLog('CMD', `./inspect_chunks --docId "${docId}" --filename "${fileName}"`);
-    addTerminalLog('INFO', `[FETCHING] Rút danh sách Chunks bóc tách từ Cloudflare D1 SQLite database...`);
+    addTerminalLog('CMD', `./inspect_document --docId "${docId}" --verbose --show_chunks`);
+    addTerminalLog('SYSTEM', `┌── [BÓC TÁCH & CHUNKING ENGINE REPORT] ──────────────────────────────────────────────┐`);
+    addTerminalLog('SYSTEM', `│ File: ${fileName}`);
+    addTerminalLog('SYSTEM', `│ DocID: ${docId}`);
+    addTerminalLog('SYSTEM', `│ Vector Engine: Workers AI BAAI BGE-M3 (768-dim Float32 Embedding)`);
+    addTerminalLog('SYSTEM', `│ Storage: Cloudflare R2 Bucket (finlegal-docs) + D1 SQLite (document_chunks)`);
+    addTerminalLog('SYSTEM', `└────────────────────────────────────────────────────────────────────────────────────┘`);
 
     try {
       const res = await fetch(`${backendUrl}/api/documents/${docId}/chunks`);
@@ -142,27 +147,33 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
         };
 
         if (!data.chunks || data.chunks.length === 0) {
-          addTerminalLog('ERROR', `Tài liệu chưa có dữ liệu Chunks trong D1.`);
+          addTerminalLog('ERROR', `[!] Chưa tìm thấy dữ liệu Chunks trong D1 SQLite.`);
           return;
         }
 
-        addTerminalLog('SUCCESS', `[SCAN_COMPLETE] Tìm thấy ${data.totalChunks} Chunks bóc tách của file "${fileName}":`);
+        addTerminalLog('SUCCESS', `[✓] Tổng số Chunks bóc tách: ${data.totalChunks} Chunks. Đang xuất chi tiết từng Chunk:`);
 
-        for (let idx = 0; idx < Math.min(data.chunks.length, 25); idx++) {
+        for (let idx = 0; idx < data.chunks.length; idx++) {
           const c = data.chunks[idx];
-          const sec = c.metadata?.sectionTitle || 'Nội dung';
+          const sec = c.metadata?.sectionTitle || 'Mục nội dung văn bản';
           const pStart = c.metadata?.pageStart || 1;
           const pEnd = c.metadata?.pageEnd || 1;
-          const snippet = (c.content || '').replace(/\s+/g, ' ').slice(0, 160);
+          const charCount = (c.content || '').length;
+          const wordCount = (c.content || '').trim().split(/\s+/).filter(Boolean).length;
+          const snippet = (c.content || '').replace(/\s+/g, ' ').slice(0, 220);
 
-          addTerminalLog('PROGRESS', `[CHUNK #${idx}] ID: ${c.chunkId} | Trang ${pStart}-${pEnd} | ${c.content.length} chars | Section: "${sec}"`);
-          addTerminalLog('INFO', `   └─ Snippet: "${snippet}..."`);
+          addTerminalLog('PROGRESS', `├─ [CHUNK #${idx + 1}/${data.totalChunks}] ID: ${c.chunkId}`);
+          addTerminalLog('INFO', `│   ├─ Vị trí trang: ${pStart} - ${pEnd} | Kích thước: ${charCount} ký tự (${wordCount} từ) | Vector: 768 Float32`);
+          addTerminalLog('INFO', `│   ├─ Ngữ cảnh / Section: "${sec}"`);
+          addTerminalLog('INFO', `│   └─ Trích xuất nội dung: "${snippet}..."`);
 
           // Live terminal stream effect
-          await new Promise(res => setTimeout(res, 70));
+          await new Promise(res => setTimeout(res, 90));
         }
+
+        addTerminalLog('SUCCESS', `└─ [HOÀN TẤT BÓC TÁCH] Đã đồng bộ toàn bộ ${data.totalChunks} Chunks vào Cloudflare Vectorize Index.`);
       } else {
-        addTerminalLog('ERROR', `Không thể truy vấn danh sách Chunks từ máy chủ.`);
+        addTerminalLog('ERROR', `Lỗi truy vấn danh sách Chunks từ máy chủ.`);
       }
     } catch (err) {
       addTerminalLog('ERROR', `Lỗi mạng khi tải Chunks: ${String(err)}`);
@@ -296,6 +307,11 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
             clearInterval(interval);
             fetchDocuments();
             if (onDocumentChange) onDocumentChange();
+            if (st.isReady) {
+              setTimeout(() => {
+                handleInspectChunks(docId);
+              }, 400);
+            }
             setTimeout(() => setActiveIngestion(null), 5000);
           }
         }

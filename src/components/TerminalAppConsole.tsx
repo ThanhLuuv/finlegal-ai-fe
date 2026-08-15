@@ -12,7 +12,9 @@ import {
   Layers, 
   FileText, 
   Trash2, 
-  RefreshCw, 
+  Eye,
+  FolderOpen,
+  X,
   Copy, 
   Check 
 } from 'lucide-react';
@@ -42,6 +44,8 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
   const [inputPrompt, setInputPrompt] = useState('');
   const [copied, setCopied] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Real-time Terminal Log Stream State
   const [terminalLogs, setTerminalLogs] = useState<Array<{
@@ -120,6 +124,85 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
     }
   }, [activeThoughts]);
 
+  // Inspect Chunks Breakdown from D1
+  const handleInspectChunks = async (docId: string) => {
+    const doc = documents.find(d => d.doc_id === docId);
+    const fileName = doc?.file_name || docId;
+
+    addTerminalLog('CMD', `./inspect_chunks --docId "${docId}" --filename "${fileName}"`);
+    addTerminalLog('INFO', `[FETCHING] Rút danh sách Chunks bóc tách từ Cloudflare D1 SQLite database...`);
+
+    try {
+      const res = await fetch(`${backendUrl}/api/documents/${docId}/chunks`);
+      if (res.ok) {
+        const data = await res.json() as {
+          docId: string;
+          totalChunks: number;
+          chunks: Array<{ chunkId: string; content: string; metadata: any }>;
+        };
+
+        if (!data.chunks || data.chunks.length === 0) {
+          addTerminalLog('ERROR', `Tài liệu chưa có dữ liệu Chunks trong D1.`);
+          return;
+        }
+
+        addTerminalLog('SUCCESS', `[SCAN_COMPLETE] Tìm thấy ${data.totalChunks} Chunks bóc tách của file "${fileName}":`);
+
+        for (let idx = 0; idx < Math.min(data.chunks.length, 25); idx++) {
+          const c = data.chunks[idx];
+          const sec = c.metadata?.sectionTitle || 'Nội dung';
+          const pStart = c.metadata?.pageStart || 1;
+          const pEnd = c.metadata?.pageEnd || 1;
+          const snippet = (c.content || '').replace(/\s+/g, ' ').slice(0, 160);
+
+          addTerminalLog('PROGRESS', `[CHUNK #${idx}] ID: ${c.chunkId} | Trang ${pStart}-${pEnd} | ${c.content.length} chars | Section: "${sec}"`);
+          addTerminalLog('INFO', `   └─ Snippet: "${snippet}..."`);
+
+          // Live terminal stream effect
+          await new Promise(res => setTimeout(res, 70));
+        }
+      } else {
+        addTerminalLog('ERROR', `Không thể truy vấn danh sách Chunks từ máy chủ.`);
+      }
+    } catch (err) {
+      addTerminalLog('ERROR', `Lỗi mạng khi tải Chunks: ${String(err)}`);
+    }
+  };
+
+  // Handle Document Delete with Terminal Logs
+  const handleDeleteDocument = async (docId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const doc = documents.find(d => d.doc_id === docId);
+    const fileName = doc?.file_name || docId;
+    if (!confirm(`Bạn có chắc muốn xóa tài liệu "${fileName}" khỏi hệ thống?`)) return;
+
+    setDeletingId(docId);
+    addTerminalLog('CMD', `./delete_document --target_id "${docId}" --filename "${fileName}"`);
+    addTerminalLog('INFO', `[1/3 VECTORIZE] Deleting vectors from Cloudflare Vectorize index...`);
+
+    try {
+      const res = await fetch(`${backendUrl}/api/documents/${docId}`, {
+        method: 'DELETE',
+        headers: { 'x-tenant-id': 'tenant_default', 'x-user-id': 'user_default' }
+      });
+
+      if (res.ok) {
+        addTerminalLog('SUCCESS', `[2/3 R2_STORAGE] Original binary & chunk text removed from Cloudflare R2.`);
+        addTerminalLog('SUCCESS', `[3/3 D1_DATABASE] Metadata records purged from Cloudflare D1. Deletion COMPLETE!`);
+        if (selectedDocId === docId) setSelectedDocId(undefined);
+        await fetchDocuments();
+        if (onDocumentChange) onDocumentChange();
+      } else {
+        const data = await res.json() as { error?: string };
+        addTerminalLog('ERROR', `Failed to delete document: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      addTerminalLog('ERROR', `Network error deleting document: ${String(err)}`);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   // Handle File Upload with Live Terminal Logs
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -177,6 +260,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
             status: string;
             totalPages: number;
             totalChunks: number;
+            extractionMethod?: string;
             isReady: boolean;
           };
 
@@ -187,16 +271,16 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
             seen.add(s);
             if (s === 'PARSING') {
               pct = 40;
-              addTerminalLog('PROGRESS', `[3/5 PARSING] Universal Fast-Path Parser (Extracting text & structure)...`);
+              addTerminalLog('PROGRESS', `[3/5 PARSING] D1 Status: PARSING (Extractor: ${st.extractionMethod || 'universal_fastpath_parser'})`);
             } else if (s === 'CHUNKING') {
               pct = 65;
-              addTerminalLog('PROGRESS', `[4/5 CHUNKING] Structure-Aware Splitter (Target 700 tokens, overlap 135)...`);
+              addTerminalLog('PROGRESS', `[4/5 CHUNKING] D1 Status: CHUNKING (Splitting document into 700-token chunks)...`);
             } else if (s === 'EMBEDDING' || s === 'INDEXING') {
               pct = 85;
-              addTerminalLog('PROGRESS', `[5/5 EMBEDDING] Workers AI BGE-M3 768-dim embeddings & Vectorize sync...`);
+              addTerminalLog('PROGRESS', `[5/5 EMBEDDING] D1 Status: ${s} (Workers AI @cf/baai/bge-m3 768-dim Vectorize Sync)...`);
             } else if (s === 'READY') {
               pct = 100;
-              addTerminalLog('SUCCESS', `[COMPLETE] File ingestion READY! Generated ${st.totalChunks || 0} chunks across ${st.totalPages || 1} pages.`);
+              addTerminalLog('SUCCESS', `[COMPLETE] Cloudflare D1 & Vectorize Index READY! Document generated ${st.totalChunks || 0} chunks across ${st.totalPages || 1} pages.`);
             }
           }
 
@@ -236,7 +320,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const selectedDocName = documents.find(d => d.doc_id === selectedDocId)?.file_name;
+  const selectedDoc = documents.find(d => d.doc_id === selectedDocId);
 
   return (
     <div className="flex flex-col h-full bg-[#070b14] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden font-mono text-xs text-slate-100">
@@ -266,15 +350,25 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
           </div>
         </div>
 
-        {/* Controls */}
+        {/* Controls Header Toolbar */}
         <div className="flex items-center gap-2">
-          {/* Target Scope Pill */}
+          {/* Open Kho Tài Liệu Modal Button */}
+          <button
+            onClick={() => setIsDocsModalOpen(true)}
+            className="px-2.5 py-1 rounded bg-[#03050a] hover:bg-slate-800 border border-slate-800 text-slate-300 font-medium text-[11px] flex items-center gap-1.5 transition-all cursor-pointer"
+            title="Quản lý Kho Tài Liệu (Xem & Xóa)"
+          >
+            <FolderOpen className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Kho Tài Liệu ({documents.length})</span>
+          </button>
+
+          {/* Target Scope Select Dropdown */}
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#03050a] border border-slate-800 text-[11px]">
             <span className="text-slate-500">Scope:</span>
             <select
               value={selectedDocId || ''}
               onChange={(e) => setSelectedDocId(e.target.value || undefined)}
-              className="bg-transparent text-cyan-400 font-bold focus:outline-none cursor-pointer"
+              className="bg-transparent text-cyan-400 font-bold focus:outline-none cursor-pointer max-w-[200px] truncate"
             >
               <option value="" className="bg-[#090d18] text-slate-200">Tất cả tài liệu ({documents.length})</option>
               {documents.map(d => (
@@ -284,6 +378,30 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
               ))}
             </select>
           </div>
+
+          {/* Action Buttons for Selected Document */}
+          {selectedDocId && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => window.open(`${backendUrl}/api/documents/${selectedDocId}/view`, '_blank')}
+                className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-700 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                title="Xem file gốc"
+              >
+                <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Xem</span>
+              </button>
+
+              <button
+                onClick={() => handleDeleteDocument(selectedDocId)}
+                disabled={deletingId === selectedDocId}
+                className="px-2.5 py-1 rounded bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                title="Xóa tài liệu khỏi hệ thống"
+              >
+                {deletingId === selectedDocId ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" /> : <Trash2 className="w-3.5 h-3.5 text-rose-400" />}
+                <span>Xóa file</span>
+              </button>
+            </div>
+          )}
 
           <button
             onClick={() => uploadInputRef.current?.click()}
@@ -411,6 +529,60 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
           <span>EXECUTE</span>
         </button>
       </form>
+
+      {/* Kho Tài Liệu Modal Overlay */}
+      {isDocsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          <div className="w-full max-w-2xl bg-[#090d18] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden font-mono text-xs text-slate-100">
+            <div className="h-11 px-4 bg-[#0d1322] border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-bold text-slate-200">
+                <FolderOpen className="w-4 h-4 text-cyan-400" />
+                <span>Quản Lý Kho Tài Liệu ({documents.length})</span>
+              </div>
+              <button onClick={() => setIsDocsModalOpen(false)} className="p-1 text-slate-400 hover:text-white rounded">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 max-h-96 overflow-y-auto space-y-2">
+              {documents.length === 0 ? (
+                <div className="py-8 text-center text-slate-500">Chưa có tài liệu nào trong kho.</div>
+              ) : (
+                documents.map((doc) => (
+                  <div key={doc.doc_id} className="p-3 rounded-xl bg-[#050810] border border-slate-800/80 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 truncate">
+                      <FileText className="w-4 h-4 text-cyan-400 shrink-0" />
+                      <div className="truncate">
+                        <div className="font-bold text-slate-200 truncate">{doc.file_name}</div>
+                        <div className="text-[10px] text-slate-400">{doc.total_pages || 1} trang • {doc.doc_id}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => window.open(`${backendUrl}/api/documents/${doc.doc_id}/view`, '_blank')}
+                        className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-700 font-bold flex items-center gap-1"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Xem</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => handleDeleteDocument(doc.doc_id, e)}
+                        disabled={deletingId === doc.doc_id}
+                        className="px-2.5 py-1 rounded bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 font-bold flex items-center gap-1"
+                      >
+                        {deletingId === doc.doc_id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                        <span>Xóa</span>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

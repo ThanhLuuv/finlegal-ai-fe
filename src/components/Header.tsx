@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Upload, Activity, ShieldCheck, FolderOpen } from 'lucide-react';
+import { Upload, Activity, FolderOpen, Scale } from 'lucide-react';
 
 interface HeaderProps {
   onOpenLogs?: () => void;
@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
   onUploadClick
 }) => {
   return (
-    <header className="h-16 bg-white border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+    <header className="h-16 bg-white shadow-xs px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
       <div className="flex items-center gap-3">
         {/* Mobile Drawer Toggle Button */}
         {onToggleMobileSidebar && (
@@ -29,8 +29,9 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0">
-            <span className="text-white font-black text-sm">FL</span>
+          {/* Elegant Professional Brand Logo Icon */}
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 flex items-center justify-center text-white shadow-sm shrink-0">
+            <Scale className="w-5 h-5 text-white" />
           </div>
           <div>
             <h1 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2 tracking-tight">
@@ -44,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Action Controls - Matching Template Image Right Button */}
+      {/* Action Controls - Top Right Button */}
       <div className="flex items-center gap-3">
         {onOpenLogs && (
           <button
@@ -61,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
         {onUploadClick && (
           <button
             onClick={onUploadClick}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-md cursor-pointer active:scale-98"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-98"
           >
             <Upload className="w-4 h-4" />
             <span>Tải tài liệu mới</span>

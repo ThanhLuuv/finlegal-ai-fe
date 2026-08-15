@@ -139,7 +139,6 @@ export default function HomePage() {
             selectedDocName={selectedDocName}
             documentsList={documentsList}
             onSelectDoc={(docId) => setSelectedDocId(docId)}
-            onAttachClick={() => uploadInputRef.current?.click()}
           />
         </main>
       </div>

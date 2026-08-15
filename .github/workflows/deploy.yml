@@ -1,4 +1,4 @@
-name: Deploy FinLegal AI Frontend Pages
+name: Deploy Lexifin Frontend Pages
 
 on:
   push:

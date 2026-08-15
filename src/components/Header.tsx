@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div>
             <h1 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2 tracking-tight">
-              FinLegal AI
+              Lexifin
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-200/60">
                 Enterprise RAG
               </span>

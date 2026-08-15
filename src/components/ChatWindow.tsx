@@ -46,7 +46,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-2xl p-5 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.07)] border border-slate-100/80 relative overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-2xl p-5 shadow-lg shadow-slate-200/80 border border-slate-200/60 relative">
       {/* Workspace Section Header Title - Matching Template: Trò chuyện với tài liệu */}
       <h2 className="text-lg font-bold text-slate-800 tracking-tight mb-3">Trò chuyện với tài liệu</h2>
 

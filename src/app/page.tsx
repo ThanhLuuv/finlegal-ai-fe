@@ -88,7 +88,7 @@ export default function HomePage() {
       />
 
       {/* Main 2-Column Template Layout */}
-      <div className="flex-1 flex overflow-hidden p-3 sm:p-5 gap-4 sm:gap-5 bg-[#f8fafc] relative">
+      <div className="flex-1 flex p-3 sm:p-5 gap-4 sm:gap-5 bg-[#f8fafc] relative overflow-hidden">
         {/* Mobile Off-Canvas Drawer Overlay */}
         {isMobileSidebarOpen && (
           <div 
@@ -97,11 +97,11 @@ export default function HomePage() {
           />
         )}
 
-        {/* Left Sidebar: Document List (Matching Template Sidebar) */}
+        {/* Left Sidebar: Document List */}
         <aside className={`
           fixed md:relative inset-y-0 left-0 z-40 md:z-auto
           w-80 sm:w-80 shrink-0 bg-[#f8fafc] md:bg-transparent
-          flex flex-col overflow-y-auto p-4 md:p-0
+          flex flex-col p-4 md:p-1 md:py-1
           transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none
           ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
@@ -130,7 +130,7 @@ export default function HomePage() {
         </aside>
 
         {/* Right Main Workspace: Trò chuyện với tài liệu */}
-        <main className="flex-1 min-w-0 h-full overflow-hidden">
+        <main className="flex-1 min-w-0 h-full p-1 py-1 flex flex-col">
           <ChatWindow
             messages={messages}
             isStreaming={isStreaming}

@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
   onUploadClick
 }) => {
   return (
-    <header className="h-16 bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.06)] border-b border-slate-100 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+    <header className="h-16 bg-white shadow-md shadow-slate-200/80 border-b border-slate-200/60 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
       <div className="flex items-center gap-3">
         {/* Mobile Drawer Toggle Button */}
         {onToggleMobileSidebar && (

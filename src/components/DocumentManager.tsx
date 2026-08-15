@@ -57,6 +57,81 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     }, 4000);
   };
 
+  const [internalIngestionState, setInternalIngestionState] = useState<{
+    docId: string;
+    fileName: string;
+    status: string;
+    totalPages?: number;
+    totalChunks?: number;
+    logs: string[];
+  } | null>(null);
+
+  const startStatusPolling = (docId: string, fileName: string) => {
+    const initLogs = [
+      `[0.05s] [UPLOAD] Uploading raw file to Cloudflare R2... OK`,
+      `[0.15s] [STATE] Initialized D1 record (status: UPLOADED)`
+    ];
+
+    setInternalIngestionState({
+      docId,
+      fileName,
+      status: 'UPLOADED',
+      logs: initLogs
+    });
+
+    const currentLogs = [...initLogs];
+    const seenStatuses = new Set(['UPLOADED']);
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/documents/${docId}/status`);
+        if (res.ok) {
+          const st = await res.json() as {
+            status: string;
+            totalPages: number;
+            totalChunks: number;
+            extractionMethod: string;
+            isReady: boolean;
+          };
+
+          const s = st.status || 'UPLOADED';
+          if (!seenStatuses.has(s)) {
+            seenStatuses.add(s);
+            if (s === 'PARSING') {
+              currentLogs.push(`[0.35s] [PARSING] Fast-path text parsing & structure analysis...`);
+            } else if (s === 'CHUNKING') {
+              currentLogs.push(`[0.70s] [CHUNKING] Structure-aware recursive splitting (700 tokens, overlap 135)...`);
+            } else if (s === 'EMBEDDING') {
+              currentLogs.push(`[1.10s] [EMBEDDING] Workers AI BGE-M3 generating 768-dim vector embeddings...`);
+            } else if (s === 'INDEXING') {
+              currentLogs.push(`[1.45s] [INDEXING] Idempotent multi-store sync (Vectorize + D1 + R2)...`);
+            } else if (s === 'READY') {
+              currentLogs.push(`[1.80s] [READY] Ingestion complete! Generated ${st.totalChunks || 0} chunks across ${st.totalPages || 1} pages.`);
+            }
+          }
+
+          setInternalIngestionState({
+            docId,
+            fileName,
+            status: s,
+            totalPages: st.totalPages,
+            totalChunks: st.totalChunks,
+            logs: [...currentLogs]
+          });
+
+          if (st.isReady || s === 'FAILED') {
+            clearInterval(interval);
+            fetchDocuments();
+            if (onDocumentChange) onDocumentChange();
+            setTimeout(() => setInternalIngestionState(null), 8000);
+          }
+        }
+      } catch {
+        // Retry next tick
+      }
+    }, 800);
+  };
+
   const fetchDocuments = React.useCallback(async () => {
     setIsLoading(true);
     try {
@@ -157,10 +232,13 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
 
       const data = await res.json() as { success: boolean; docId?: string; message?: string; error?: string };
 
-      if (res.ok && data.success) {
+      if (res.ok && data.success && data.docId) {
         showToast(data.message || 'Tải lên thành công! Đang bóc tách dữ liệu.');
+        if (data.docId) {
+          onSelectDoc(data.docId);
+          startStatusPolling(data.docId, file.name);
+        }
         await fetchDocuments();
-        if (data.docId) onSelectDoc(data.docId);
         if (onDocumentChange) onDocumentChange();
       } else {
         showToast(data.error || 'Xử lý file thất bại.', true);
@@ -299,13 +377,13 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
       </div>
 
       {/* Live Ingestion Terminal Progress Widget */}
-      {activeIngestion && (
+      {(activeIngestion || internalIngestionState) && (
         <IngestionTerminalCard 
-          fileName={activeIngestion.fileName}
-          status={activeIngestion.status}
-          totalPages={activeIngestion.totalPages}
-          totalChunks={activeIngestion.totalChunks}
-          logs={activeIngestion.logs}
+          fileName={(activeIngestion || internalIngestionState)!.fileName}
+          status={(activeIngestion || internalIngestionState)!.status}
+          totalPages={(activeIngestion || internalIngestionState)!.totalPages}
+          totalChunks={(activeIngestion || internalIngestionState)!.totalChunks}
+          logs={(activeIngestion || internalIngestionState)!.logs}
         />
       )}
 

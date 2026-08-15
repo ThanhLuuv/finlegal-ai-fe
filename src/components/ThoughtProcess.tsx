@@ -10,8 +10,8 @@ interface ThoughtProcessProps {
 }
 
 export const ThoughtProcess: React.FC<ThoughtProcessProps> = ({ thoughts, isStreaming }) => {
-  // Collapsed by default
-  const [isOpen, setIsOpen] = useState(false);
+  // Expanded by default so live CLI execution traces are immediately visible
+  const [isOpen, setIsOpen] = useState(true);
 
   if (!thoughts || thoughts.length === 0) return null;
 

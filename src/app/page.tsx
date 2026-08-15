@@ -1,23 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSSE } from '../hooks/useSSE';
 import { Header } from '../components/Header';
 import { SecurityGate } from '../components/SecurityGate';
-import { ChatWindow } from '../components/ChatWindow';
-import { DocumentManager } from '../components/DocumentManager';
+import { TerminalAppConsole } from '../components/TerminalAppConsole';
 import { TerminalConsoleModal } from '../components/TerminalConsoleModal';
-import { X } from 'lucide-react';
-import { DocumentRecord, SystemLog, LogCategory } from '../types';
+import { SystemLog } from '../types';
 
 export default function HomePage() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://finlegal-backend.lvthanh-work.workers.dev';
   const { messages, isStreaming, activeThoughts, sendMessage } = useSSE(backendUrl);
-  const [selectedDocId, setSelectedDocId] = useState<string | undefined>(undefined);
-  const [selectedDocName, setSelectedDocName] = useState<string | undefined>(undefined);
-  const [documentsList, setDocumentsList] = useState<Array<{ doc_id: string; file_name: string }>>([]);
-  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isTerminalModalOpen, setIsTerminalModalOpen] = useState(false);
 
   const [systemLogs, setSystemLogs] = useState<SystemLog[]>([
     {
@@ -35,34 +29,6 @@ export default function HomePage() {
       message: 'Primary LLM Engine online: DeepSeek-v4-Flash (sk-0e39... API connected).'
     }
   ]);
-
-  const addLog = useCallback((category: LogCategory, level: 'INFO' | 'WARN' | 'ERROR' | 'SUCCESS' | 'EXEC', message: string, details?: any) => {
-    setSystemLogs(prev => [
-      ...prev,
-      {
-        id: `log_${Date.now()}_${Math.random()}`,
-        timestamp: new Date().toLocaleTimeString(),
-        category,
-        level,
-        message,
-        details
-      }
-    ]);
-  }, []);
-
-  // Sync active agent thoughts into System Terminal Console logs
-  useEffect(() => {
-    if (activeThoughts && activeThoughts.length > 0) {
-      const lastThought = activeThoughts[activeThoughts.length - 1];
-      let cat: LogCategory = 'SYSTEM';
-      if (lastThought.agent === 'SUPERVISOR') cat = 'SYSTEM';
-      else if (lastThought.agent === 'RAG_AGENT') cat = 'VECTORIZE';
-      else if (lastThought.agent === 'SQL_AGENT') cat = 'D1_SQL';
-      else if (lastThought.agent === 'AUDITOR') cat = 'RERANK';
-
-      addLog(cat, 'EXEC', `[${lastThought.agent}] ${lastThought.thought}`, lastThought.data);
-    }
-  }, [activeThoughts, addLog]);
 
   const [isVerified, setIsVerified] = useState(false);
   const [isTurnstilePassed, setIsTurnstilePassed] = useState(false);
@@ -88,32 +54,6 @@ export default function HomePage() {
     }
   }, []);
 
-  const fetchDocsList = async () => {
-    try {
-      const res = await fetch(`${backendUrl}/api/documents`, {
-        headers: { 'x-tenant-id': 'tenant_default', 'x-user-id': 'user_default' }
-      });
-      if (res.ok) {
-        const data = await res.json() as { documents: DocumentRecord[] };
-        const list = (data.documents || []).map(d => ({ doc_id: d.doc_id, file_name: d.file_name }));
-        setDocumentsList(list);
-
-        if (selectedDocId) {
-          const found = list.find(d => d.doc_id === selectedDocId);
-          setSelectedDocName(found ? found.file_name : undefined);
-        } else {
-          setSelectedDocName(undefined);
-        }
-      }
-    } catch {}
-  };
-
-  useEffect(() => {
-    if (isVerified) {
-      fetchDocsList();
-    }
-  }, [isVerified, selectedDocId]);
-
   if (!isVerified) {
     return (
       <SecurityGate 
@@ -124,85 +64,29 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[#050811] text-slate-100 font-mono selection:bg-cyan-500 selection:text-black">
-      {/* Dark Terminal Header */}
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
+      {/* Top Header */}
       <Header 
-        onOpenLogs={() => setIsTerminalOpen(true)} 
-        onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-        onUploadClick={() => {
-          addLog('INGESTION', 'INFO', 'Starting document upload file selector dialog...');
-          uploadInputRef.current?.click();
-        }}
+        onOpenLogs={() => setIsTerminalModalOpen(true)} 
+        onUploadClick={() => uploadInputRef.current?.click()}
       />
 
-      {/* Main 2-Column Template Layout */}
-      <div className="flex-1 flex p-3 sm:p-5 gap-4 sm:gap-5 bg-[#050811] relative overflow-hidden">
-        {/* Mobile Off-Canvas Drawer Overlay */}
-        {isMobileSidebarOpen && (
-          <div 
-            onClick={() => setIsMobileSidebarOpen(false)}
-            className="md:hidden fixed inset-0 z-30 bg-slate-950/80 backdrop-blur-md transition-opacity"
-          />
-        )}
-
-        {/* Left Sidebar: Document List */}
-        <aside className={`
-          fixed md:relative inset-y-0 left-0 z-40 md:z-auto
-          w-80 sm:w-80 shrink-0 bg-[#070b14] md:bg-transparent
-          flex flex-col p-4 md:p-1 md:py-1
-          transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none
-          ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        `}>
-          {/* Mobile Drawer Close Button */}
-          <div className="md:hidden flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
-            <span className="font-bold text-sm text-slate-200 font-mono">Kho Tài Liệu</span>
-            <button
-              onClick={() => setIsMobileSidebarOpen(false)}
-              className="p-1 rounded-lg hover:bg-slate-800 text-slate-400"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <DocumentManager
-            backendUrl={backendUrl}
-            selectedDocId={selectedDocId}
-            uploadInputRef={uploadInputRef}
-            onSelectDoc={(docId) => {
-              setSelectedDocId(docId);
-              if (!docId) {
-                setSelectedDocName(undefined);
-                addLog('SYSTEM', 'INFO', 'Switched RAG search scope to ALL DOCUMENTS.');
-              } else {
-                addLog('SYSTEM', 'INFO', `Switched RAG search scope to target docId: ${docId}`);
-              }
-              setIsMobileSidebarOpen(false);
-            }}
-            onDocumentChange={fetchDocsList}
-          />
-        </aside>
-
-        {/* Right Main Workspace: Trò chuyện với tài liệu */}
-        <main className="flex-1 min-w-0 h-full p-1 py-1 flex flex-col">
-          <ChatWindow
-            messages={messages}
-            isStreaming={isStreaming}
-            onSendMessage={(prompt) => {
-              addLog('DEEPSEEK', 'EXEC', `User query submitted: "${prompt.slice(0, 80)}..."`, { prompt, docId: selectedDocId });
-              sendMessage(prompt, selectedDocId);
-            }}
-            selectedDocId={selectedDocId}
-            selectedDocName={selectedDocName}
-            documentsList={documentsList}
-            onSelectDoc={(docId) => setSelectedDocId(docId)}
-          />
-        </main>
+      {/* Main Single Terminal Workspace Screen */}
+      <div className="flex-1 p-3 sm:p-5 bg-[#f8fafc] overflow-hidden flex flex-col">
+        <TerminalAppConsole
+          backendUrl={backendUrl}
+          messages={messages}
+          isStreaming={isStreaming}
+          activeThoughts={activeThoughts}
+          onSendMessage={(prompt, docId) => sendMessage(prompt, docId)}
+          uploadInputRef={uploadInputRef}
+        />
       </div>
 
-      {/* Developer Terminal Console Overlay Modal */}
+      {/* Full Developer Terminal Logs Modal */}
       <TerminalConsoleModal
-        isOpen={isTerminalOpen}
-        onClose={() => setIsTerminalOpen(false)}
+        isOpen={isTerminalModalOpen}
+        onClose={() => setIsTerminalModalOpen(false)}
         logs={systemLogs}
         onClearLogs={() => setSystemLogs([])}
       />

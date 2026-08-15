@@ -1,23 +1,68 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSSE } from '../hooks/useSSE';
 import { Header } from '../components/Header';
 import { SecurityGate } from '../components/SecurityGate';
 import { ChatWindow } from '../components/ChatWindow';
 import { DocumentManager } from '../components/DocumentManager';
-import { AdminLogModal } from '../components/AdminLogModal';
+import { TerminalConsoleModal } from '../components/TerminalConsoleModal';
 import { X } from 'lucide-react';
-import { DocumentRecord } from '../types';
+import { DocumentRecord, SystemLog, LogCategory } from '../types';
 
 export default function HomePage() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://finlegal-backend.lvthanh-work.workers.dev';
-  const { messages, isStreaming, sendMessage } = useSSE(backendUrl);
+  const { messages, isStreaming, activeThoughts, sendMessage } = useSSE(backendUrl);
   const [selectedDocId, setSelectedDocId] = useState<string | undefined>(undefined);
   const [selectedDocName, setSelectedDocName] = useState<string | undefined>(undefined);
   const [documentsList, setDocumentsList] = useState<Array<{ doc_id: string; file_name: string }>>([]);
-  const [isLogsOpen, setIsLogsOpen] = useState(false);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  const [systemLogs, setSystemLogs] = useState<SystemLog[]>([
+    {
+      id: 'init_1',
+      timestamp: new Date().toLocaleTimeString(),
+      category: 'SYSTEM',
+      level: 'SUCCESS',
+      message: 'FinLegal Edge Engine v4.0 (Cloudflare Worker + Vectorize + D1 + R2) initialized.'
+    },
+    {
+      id: 'init_2',
+      timestamp: new Date().toLocaleTimeString(),
+      category: 'DEEPSEEK',
+      level: 'INFO',
+      message: 'Primary LLM Engine online: DeepSeek-v4-Flash (sk-0e39... API connected).'
+    }
+  ]);
+
+  const addLog = useCallback((category: LogCategory, level: 'INFO' | 'WARN' | 'ERROR' | 'SUCCESS' | 'EXEC', message: string, details?: any) => {
+    setSystemLogs(prev => [
+      ...prev,
+      {
+        id: `log_${Date.now()}_${Math.random()}`,
+        timestamp: new Date().toLocaleTimeString(),
+        category,
+        level,
+        message,
+        details
+      }
+    ]);
+  }, []);
+
+  // Sync active agent thoughts into System Terminal Console logs
+  useEffect(() => {
+    if (activeThoughts && activeThoughts.length > 0) {
+      const lastThought = activeThoughts[activeThoughts.length - 1];
+      let cat: LogCategory = 'SYSTEM';
+      if (lastThought.agent === 'SUPERVISOR') cat = 'SYSTEM';
+      else if (lastThought.agent === 'RAG_AGENT') cat = 'VECTORIZE';
+      else if (lastThought.agent === 'SQL_AGENT') cat = 'D1_SQL';
+      else if (lastThought.agent === 'AUDITOR') cat = 'RERANK';
+
+      addLog(cat, 'EXEC', `[${lastThought.agent}] ${lastThought.thought}`, lastThought.data);
+    }
+  }, [activeThoughts, addLog]);
 
   const [isVerified, setIsVerified] = useState(false);
   const [isTurnstilePassed, setIsTurnstilePassed] = useState(false);
@@ -79,38 +124,41 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
-      {/* Header with Right-Aligned Tải Tài Liệu Mới Button */}
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[#050811] text-slate-100 font-mono selection:bg-cyan-500 selection:text-black">
+      {/* Dark Terminal Header */}
       <Header 
-        onOpenLogs={() => setIsLogsOpen(true)} 
+        onOpenLogs={() => setIsTerminalOpen(true)} 
         onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-        onUploadClick={() => uploadInputRef.current?.click()}
+        onUploadClick={() => {
+          addLog('INGESTION', 'INFO', 'Starting document upload file selector dialog...');
+          uploadInputRef.current?.click();
+        }}
       />
 
       {/* Main 2-Column Template Layout */}
-      <div className="flex-1 flex p-3 sm:p-5 gap-4 sm:gap-5 bg-[#f8fafc] relative overflow-hidden">
+      <div className="flex-1 flex p-3 sm:p-5 gap-4 sm:gap-5 bg-[#050811] relative overflow-hidden">
         {/* Mobile Off-Canvas Drawer Overlay */}
         {isMobileSidebarOpen && (
           <div 
             onClick={() => setIsMobileSidebarOpen(false)}
-            className="md:hidden fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs transition-opacity"
+            className="md:hidden fixed inset-0 z-30 bg-slate-950/80 backdrop-blur-md transition-opacity"
           />
         )}
 
         {/* Left Sidebar: Document List */}
         <aside className={`
           fixed md:relative inset-y-0 left-0 z-40 md:z-auto
-          w-80 sm:w-80 shrink-0 bg-[#f8fafc] md:bg-transparent
+          w-80 sm:w-80 shrink-0 bg-[#070b14] md:bg-transparent
           flex flex-col p-4 md:p-1 md:py-1
           transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none
           ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
           {/* Mobile Drawer Close Button */}
-          <div className="md:hidden flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
-            <span className="font-bold text-sm text-slate-800">Kho Tài Liệu</span>
+          <div className="md:hidden flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+            <span className="font-bold text-sm text-slate-200 font-mono">Kho Tài Liệu</span>
             <button
               onClick={() => setIsMobileSidebarOpen(false)}
-              className="p-1 rounded-lg hover:bg-slate-200 text-slate-500"
+              className="p-1 rounded-lg hover:bg-slate-800 text-slate-400"
             >
               <X className="w-4 h-4" />
             </button>
@@ -122,7 +170,12 @@ export default function HomePage() {
             uploadInputRef={uploadInputRef}
             onSelectDoc={(docId) => {
               setSelectedDocId(docId);
-              if (!docId) setSelectedDocName(undefined);
+              if (!docId) {
+                setSelectedDocName(undefined);
+                addLog('SYSTEM', 'INFO', 'Switched RAG search scope to ALL DOCUMENTS.');
+              } else {
+                addLog('SYSTEM', 'INFO', `Switched RAG search scope to target docId: ${docId}`);
+              }
               setIsMobileSidebarOpen(false);
             }}
             onDocumentChange={fetchDocsList}
@@ -134,7 +187,10 @@ export default function HomePage() {
           <ChatWindow
             messages={messages}
             isStreaming={isStreaming}
-            onSendMessage={(prompt) => sendMessage(prompt, selectedDocId)}
+            onSendMessage={(prompt) => {
+              addLog('DEEPSEEK', 'EXEC', `User query submitted: "${prompt.slice(0, 80)}..."`, { prompt, docId: selectedDocId });
+              sendMessage(prompt, selectedDocId);
+            }}
             selectedDocId={selectedDocId}
             selectedDocName={selectedDocName}
             documentsList={documentsList}
@@ -143,10 +199,12 @@ export default function HomePage() {
         </main>
       </div>
 
-      <AdminLogModal
-        isOpen={isLogsOpen}
-        onClose={() => setIsLogsOpen(false)}
-        backendUrl={backendUrl}
+      {/* Developer Terminal Console Overlay Modal */}
+      <TerminalConsoleModal
+        isOpen={isTerminalOpen}
+        onClose={() => setIsTerminalOpen(false)}
+        logs={systemLogs}
+        onClearLogs={() => setSystemLogs([])}
       />
     </div>
   );

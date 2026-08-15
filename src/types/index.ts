@@ -3,6 +3,18 @@
 export type AgentRole = 'SUPERVISOR' | 'RAG_AGENT' | 'SQL_AGENT' | 'AUDITOR';
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'NONE';
 
+export type LogLevel = 'INFO' | 'WARN' | 'ERROR' | 'SUCCESS' | 'EXEC';
+export type LogCategory = 'SYSTEM' | 'INGESTION' | 'VECTORIZE' | 'D1_SQL' | 'RERANK' | 'DEEPSEEK';
+
+export interface SystemLog {
+  id: string;
+  timestamp: string;
+  category: LogCategory;
+  level: LogLevel;
+  message: string;
+  details?: any;
+}
+
 export interface FormattedSourceLocation {
   displayLabel: string;
   documentName: string;
@@ -56,4 +68,3 @@ export interface DocumentRecord {
   processing_status?: 'UPLOADING' | 'UPLOADED' | 'PARSING' | 'EXTRACTING' | 'STRUCTURING' | 'CHUNKING' | 'EMBEDDING' | 'INDEXING' | 'READY' | 'FAILED' | 'DELETING' | 'DELETED' | string;
   created_at: string;
 }
-

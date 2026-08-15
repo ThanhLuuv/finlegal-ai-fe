@@ -16,7 +16,8 @@ import {
   FolderOpen,
   X,
   Copy,
-  Check
+  Check,
+  RotateCcw
 } from 'lucide-react';
 import { ChatMessage, DocumentRecord, AgentThoughtStep } from '../types';
 

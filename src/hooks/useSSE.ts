@@ -110,11 +110,12 @@ export function useSSE(backendUrl = 'https://finlegal-backend.lvthanh-work.worke
                 }));
               } else if (currentEvent === 'final_answer') {
                 const { answer, sources } = parsedData;
+                const cleanAnswer = (answer || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
                 setMessages(prev => prev.map(msg => {
                   if (msg.id === assistantMessageId) {
                     return {
                       ...msg,
-                      content: answer,
+                      content: cleanAnswer,
                       sources: sources || msg.sources,
                       isStreaming: false
                     };

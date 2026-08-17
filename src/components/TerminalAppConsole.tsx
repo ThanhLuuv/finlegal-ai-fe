@@ -248,6 +248,10 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
         setSelectedDocId(docId);
         addTerminalLog('SUCCESS', `[2/5 STATE] Initialized D1 database record (docId: ${docId})`);
 
+        // Instantly refresh documents list so Header count updates right away!
+        await fetchDocuments();
+        if (onDocumentChange) onDocumentChange();
+
         // Start Live Polling Ingestion Status
         startStatusPolling(docId, file.name);
       } else {
@@ -282,6 +286,9 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
 
           if (!seen.has(s)) {
             seen.add(s);
+            fetchDocuments();
+            if (onDocumentChange) onDocumentChange();
+
             if (s === 'PARSING') {
               pct = 40;
               addTerminalLog('PROGRESS', `[3/5 PARSING] D1 Status: PARSING (Extractor: ${st.extractionMethod || 'universal_fastpath_parser'})`);
@@ -307,7 +314,7 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
 
           if (st.isReady || s === 'FAILED') {
             clearInterval(interval);
-            fetchDocuments();
+            await fetchDocuments();
             if (onDocumentChange) onDocumentChange();
             if (st.isReady) {
               setTimeout(() => {

@@ -189,6 +189,12 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
     const fileName = doc?.file_name || docId;
     if (!confirm(`Bạn có chắc muốn xóa tài liệu "${fileName}" khỏi hệ thống?`)) return;
 
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+    setActiveIngestion(null);
+
     setDeletingId(docId);
     addTerminalLog('CMD', `./delete_document --target_id "${docId}" --filename "${fileName}"`);
     addTerminalLog('INFO', `[1/3 VECTORIZE] Deleting vectors from Cloudflare Vectorize index...`);
@@ -267,7 +273,14 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
     }
   };
 
+  const pollingIntervalRef = useRef<any>(null);
+
   const startStatusPolling = (docId: string, fileName: string) => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+
     const seen = new Set(['UPLOADED']);
     const interval = setInterval(async () => {
       try {
@@ -313,7 +326,10 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
           });
 
           if (st.isReady || s === 'FAILED') {
-            clearInterval(interval);
+            if (pollingIntervalRef.current) {
+              clearInterval(pollingIntervalRef.current);
+              pollingIntervalRef.current = null;
+            }
             await fetchDocuments();
             if (onDocumentChange) onDocumentChange();
             if (st.isReady) {
@@ -323,9 +339,20 @@ export const TerminalAppConsole: React.FC<TerminalAppConsoleProps> = ({
             }
             setTimeout(() => setActiveIngestion(null), 5000);
           }
+        } else if (res.status === 404 || !res.ok) {
+          // Document was deleted! Stop polling immediately!
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+          setActiveIngestion(null);
+          await fetchDocuments();
+          if (onDocumentChange) onDocumentChange();
         }
       } catch { }
     }, 800);
+
+    pollingIntervalRef.current = interval;
   };
 
   const handleClearLogs = () => {

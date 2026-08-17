@@ -125,6 +125,11 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             if (onDocumentChange) onDocumentChange();
             setTimeout(() => setInternalIngestionState(null), 8000);
           }
+        } else if (res.status === 404 || !res.ok) {
+          clearInterval(interval);
+          setInternalIngestionState(null);
+          fetchDocuments();
+          if (onDocumentChange) onDocumentChange();
         }
       } catch {
         // Retry next tick
